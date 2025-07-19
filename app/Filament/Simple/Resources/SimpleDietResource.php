@@ -19,7 +19,11 @@ class SimpleDietResource extends Resource
     protected static ?string $model = SimpleDiet::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Diet Types';
+    protected static ?string $navigationGroup = 'Diet';
+    protected static ?string $label = "Diet Types";
+
+    protected static ?int $navigationSort = 2;
+
 
     public static function form(Form $form): Form
     {

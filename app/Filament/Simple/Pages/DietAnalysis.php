@@ -14,6 +14,11 @@ class DietAnalysis extends Page
 
     protected static string $view = 'filament.simple.pages.diet-analysis';
 
+    protected static ?string $title = 'NHSL Total Diet Analysis';
+
+    protected static bool $shouldRegisterNavigation = false;
+    
+
     public $date;
     public $units;
     public $dietData;

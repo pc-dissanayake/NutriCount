@@ -1,16 +1,24 @@
 <x-filament-panels::page>
+    <!-- Breadcrumb System -->
+    <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
+        <a href="{{ url('/simple') }}" class="text-blue-500 hover:underline">Home</a>
+        <span class="mx-2">&gt;</span>
+        <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
+        <span class="mx-2">&gt;</span>
+        <span class="text-gray-500 dark:text-gray-400">{{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</span>
+    </nav>
 
-
+    <!-- Existing Content -->
     @if ($date && request('unit_id'))
-        <div class="mt-8">
-            <h2 class="text-xl font-bold mb-4">Selected Date and Unit</h2>
-            <p><strong>Date:</strong> {{ $date }}</p>
-            <p><strong>Unit:</strong> {{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</p>
+        <div class="mt-4 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl" >
+            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Selected Date and Unit</h2>
+            <p class="text-gray-700 dark:text-gray-500"><strong>Date:</strong> {{ $date }}</p>
+            <p class="text-gray-700 dark:text-gray-500"><strong>Unit:</strong> {{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</p><p>&nbsp;</p>
+        
             <button 
                 type="button" 
-                type="button" 
                 id="show-form" 
-                class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 mt-4 px-4 py-2 rounded"
+                class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 mt-8 px-4 py-2 rounded-xl"
             >
                 Edit
             </button>
@@ -18,30 +26,26 @@
         <div id="form-container" class="hidden">
     @endif
 
-    <form method="GET" action="{{ url('/simple/unit-diet-entry') }}" class="space-y-4">
-        <div class="flex items-center gap-4">
+    <!-- Existing Form and Table -->
+    <form method="GET" action="{{ url('/simple/unit-diet-entry') }}" class="space-y-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow">
+        <div class="flex items-center gap-4 ">
             <div class="flex flex-col">
-                <label for="date" class="font-semibold mb-1">Date:</label>
-                <input type="date" id="date" name="date" value="{{ $date ?? '' }}" class="border rounded px-3 py-2"
-                    required>
+                <label for="date" class="font-semibold mb-1 text-gray-900 dark:text-gray-100">Date:</label>
+                <input type="date" id="date" name="date" value="{{ $date ?? '' }}" class="border rounded-xl px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" required>
             </div>
-            
 
             <div class="flex flex-col">
-                <label for="unit_id" class="font-semibold mb-1">Unit:</label>
-                <select id="unit_id" name="unit_id" class="border rounded px-3 py-2 w-full"  required>
+                <label for="unit_id" class="font-semibold mb-1 text-gray-900 dark:text-gray-100">Unit:</label>
+                <select id="unit_id" name="unit_id" class="border rounded-xl px-3 py-2 w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" required>
                     <option value="" disabled selected>Select a unit</option>
                     @foreach ($units as $unit)
-                        <option value="{{ $unit->id }}"
-                            {{ request('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
+                        <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
                     @endforeach
                 </select>
             </div>
-          
         </div>
         <div class="flex items-center gap-2">
-            <button type="submit"
-                class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 px-4 py-2 m-2">Submit</button>
+            <button type="submit" class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 px-4 py-2 m-2 rounded-xl">Submit</button>
         </div>
     </form>
 
@@ -50,28 +54,28 @@
     @endif
 
     @if (!empty($simpleDiets))
-        <div class="mt-8">
-            <h2 class="text-xl font-bold mb-4">Simple Diets</h2>
+        <div class="mt-8 bg-gray-100 dark:bg-gray-900 p-3 rounded-xl">
+            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Simple Diets</h2>
             <form method="POST" action="{{ url('/simple/unit-diet-entry/save') }}" class="space-y-4">
                 @csrf
                 <input type="hidden" name="unit_id" value="{{ request('unit_id') }}">
                 <input type="hidden" name="date" value="{{ $date }}">
-                <table class="table-auto w-full border-collapse border border-gray-300">
+                <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-600">
                     <thead>
                         <tr>
-                            <th class="border border-gray-300 px-4 py-2">Diet Name</th>
-                            <th class="border border-gray-300 px-4 py-2">Amount</th>
-                            <th class="border border-gray-300 px-4 py-2"></th>
+                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">Diet Name</th>
+                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">Amount</th>
+                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($simpleDiets as $diet)
                             <tr>
-                                <td class="border border-gray-300 px-4 py-2">{{ $diet->DietName_en }}</td>
-                                <td class="border border-gray-300 px-4 py-2">
-                                    <input type="number" name="dietAmounts[{{ $diet->id }}]" class="border rounded px-3 py-2 w-full" value="{{ $diet->saved_amount ?? '' }}">
+                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">{{ $diet->DietName_en }}</td>
+                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
+                                    <input type="number" name="dietAmounts[{{ $diet->id }}]" class="border rounded-xl px-3 py-2 w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" value="{{ $diet->saved_amount ?? '' }}">
                                 </td>
-                                <td class="border border-gray-300 px-4 py-2">{{ $diet->primary_amount_unit }}</td>
+                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">{{ $diet->primary_amount_unit }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -84,7 +88,6 @@
     @endif
 
     <script>
-
         document.getElementById('show-form').addEventListener('click', function () {
             document.getElementById('form-container').classList.remove('hidden');
             document.querySelector('.mt-8').classList.add('hidden');
