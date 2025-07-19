@@ -25,6 +25,8 @@ class RolePermissionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'User Management';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -52,9 +54,9 @@ class RolePermissionResource extends Resource
             ->columns([
                 TextColumn::make('permission')->searchable(),
                 ToggleColumn::make('admin'),
-                ToggleColumn::make('Ward Admin'),
                 ToggleColumn::make('level1')->label(env("LEVEL_1_NAME")),
                 ToggleColumn::make('level2')->label(env("LEVEL_2_NAME")),
+                ToggleColumn::make('level3')->label(env("LEVEL_3_NAME")),
                 ToggleColumn::make('user'),
                 ToggleColumn::make('guest'),
                 ToggleColumn::make('api_only'),

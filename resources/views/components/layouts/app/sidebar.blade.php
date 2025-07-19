@@ -20,11 +20,11 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
-                <flux:navlist.item icon="adjustments-horizontal" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
+                <flux:navlist.item icon="adjustments-horizontal" href="/admin" target="_blank">
+                {{ __('Admin') }}
                 </flux:navlist.item>
 
-                
+                -
             </flux:navlist>
 
             <!-- Desktop User Menu -->

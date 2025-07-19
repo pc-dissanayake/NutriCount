@@ -4,6 +4,48 @@ namespace App\Enums;
 
 enum HospitalRoomType: string
 {
+        // Wards
+        case GENERAL_WARD = 'General Ward';
+        case FEMALE_WARD = 'Female Ward';
+        case MALE_WARD = 'Male Ward';
+        case PRIVATE_WARD = 'Private Ward';
+        case ISOLATION_WARD = 'Isolation Ward';
+        case POSTNATAL_WARD = 'Postnatal Ward';
+        case PRENATAL_WARD = 'Prenatal Ward';
+        case SURGICAL_WARD = 'Surgical Ward';
+        case MEDICAL_WARD = 'Medical Ward';
+        case CHILDREN_WARD = 'Children\'s Ward';
+        case GERIATRIC_WARD = 'Geriatric Ward';
+        case MATERNAL_WARD = 'Maternal Ward';
+        case INFANT_WARD = 'Infant Ward';
+        case HIGH_RISK_WARD = 'High Risk Ward';
+
+        // Operating Theatres
+        case MAIN_OPERATING_THEATRE = 'Main Operating Theatre';
+        case EMERGENCY_OPERATING_THEATRE = 'Emergency Operating Theatre';
+        case DAY_SURGERY_THEATRE = 'Day Surgery Theatre';
+        case OBSTETRIC_THEATRE = 'Obstetric Theatre';
+        case ORTHOPEDIC_THEATRE = 'Orthopedic Theatre';
+        case CARDIAC_THEATRE = 'Cardiac Operating Theatre';
+        case NEUROSURGERY_THEATRE = 'Neurosurgery Theatre';
+        case PLASTIC_SURGERY_THEATRE = 'Plastic Surgery Theatre';
+
+        // Additional Units
+        case DIALYSIS_UNIT = 'Dialysis Unit';
+        case CHEMOTHERAPY_UNIT = 'Chemotherapy Unit';
+        case RADIOTHERAPY_UNIT = 'Radiotherapy Unit';
+        case ENDOSCOPY_UNIT = 'Endoscopy Unit';
+        case PHYSIOTHERAPY_UNIT = 'Physiotherapy Unit';
+        case OCCUPATIONAL_THERAPY_UNIT = 'Occupational Therapy Unit';
+        case SPEECH_THERAPY_UNIT = 'Speech Therapy Unit';
+        case REHABILITATION_UNIT = 'Rehabilitation Unit';
+        case PALLIATIVE_CARE_UNIT = 'Palliative Care Unit';
+        case PAIN_MANAGEMENT_UNIT = 'Pain Management Unit';
+        case TRANSFUSION_UNIT = 'Transfusion Unit';
+        case ISOLATION_UNIT = 'Isolation Unit';
+        case OBSERVATION_UNIT = 'Observation Unit';
+        case TRIAGE_UNIT = 'Triage Unit';
+
         // Specialized Units
     case CANCER_UNIT = 'Oncology Unit (Cancer Treatment)';
     case CARDIOLOGY_UNIT = 'Cardiology Unit';

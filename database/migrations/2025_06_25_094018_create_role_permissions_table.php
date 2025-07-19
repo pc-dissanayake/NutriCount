@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('role_permissions', function (Blueprint $table) {
+        Schema::create('roles_permissions', function (Blueprint $table) {
             $table->id();
             $table->string('permission');
             $table->boolean('admin')->default(false);

@@ -9,7 +9,7 @@ class RolePermission extends Model
 {
     use HasFactory;
 
-    protected $table = 'roles-permissions';
+    protected $table = 'role_permissions';
     public $timestamps = false;
     protected $fillable = [
         'permission',
