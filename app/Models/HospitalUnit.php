@@ -34,6 +34,7 @@ class HospitalUnit extends Model
         'qualification_period_end',
         'qualification_issuer',
         'tags',
+        'order_id',
     ];
 
     protected static function boot()

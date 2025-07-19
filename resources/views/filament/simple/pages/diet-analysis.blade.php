@@ -1,5 +1,26 @@
 <x-filament-panels::page>
+<style>
 
+    th.rotate {
+  /* Something you can count on */
+  height: 240px;
+  white-space: nowrap;
+}
+
+th.rotate > div {
+  transform: 
+    /* Magic Numbers */
+    translate(5px, 100px)
+    /* 45 is really 360 - 45 */
+    rotate(270deg);
+  width: 30px;
+}
+th.rotate > div > span {
+  padding: 1px 5px;
+}
+
+
+</style>
     <!-- Breadcrumb System -->
     <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
         <a href="{{ url('/simple') }}" class="text-blue-500 hover:underline">Home</a>
@@ -15,13 +36,14 @@
 
     <div id="print-area">
 
-    <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Analysis of Diets of the Govenment Hospital at National Hospital of Sri Lq on {{ $date ?? 'No Date Selected' }}</h2>
+    <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Analysis of Diets of the Government Hospital at National Hospital of Sri Lanka on {{ $date ?? 'No Date Selected' }}</h2>
     <table style="border-collapse: collapse; width: 100%;">
         <thead>
             <tr>
                 <th style="border: 1px solid black; padding: 8px;">Unit</th>
                 @foreach ($dietTypes as $dietType)
-                    <th style="border: 1px solid black; padding: 8px;">{{ $dietType->DietName_en }} ({{ $dietType->primary_amount_unit }})</th>
+                    <th style="border: 1px solid black; padding: 8px;" class="rotate">
+                        <div><span>{{ $dietType->DietName_en }} ({{ $dietType->primary_amount_unit }})</span></div></th>
                 @endforeach
                 <th style="border: 1px solid black; padding: 8px; display: none;">Total</th>
             </tr>

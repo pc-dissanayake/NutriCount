@@ -47,6 +47,10 @@ class HospitalUnitResource extends Resource
                                     ->separator(',')
                                     ->suggestions(['ward', 'clinic', 'icu', 'surgery'])
                                     ->nullable(),
+                                Forms\Components\TextInput::make('order_id')
+                                    ->label('Order ID')
+                                    ->default(fn () => \App\Models\HospitalUnit::max('order_id') + 1)
+                                    ->readOnly(),
                             ]),
                         Forms\Components\Tabs\Tab::make('Other')
                             ->schema([
@@ -76,6 +80,7 @@ class HospitalUnitResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('order_id')->label('Order ID')->sortable(),
                 Tables\Columns\TextColumn::make('name')->label('Name')->searchable(),
                 Tables\Columns\TextColumn::make('type')->label('Type'),
                 Tables\Columns\TextColumn::make('identifier')->label('Identifier'),
@@ -84,6 +89,7 @@ class HospitalUnitResource extends Resource
                 Tables\Columns\TextColumn::make('tags')->label('Tags')->formatStateUsing(fn($state) => is_array($state) ? implode(', ', $state) : $state),
                 Tables\Columns\ToggleColumn::make('active')->label('Active'),
             ])
+            ->defaultSort('order_id')
             ->filters([
                 //
             ])

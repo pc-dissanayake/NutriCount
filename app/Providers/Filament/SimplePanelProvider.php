@@ -25,6 +25,7 @@ class SimplePanelProvider extends PanelProvider
         return $panel
             ->id('simple')
             ->path('simple')
+            ->spa()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -50,6 +51,9 @@ class SimplePanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->resources([
+                \App\Filament\Resources\HospitalUnitResource::class, // Link to HospitalUnitResource
             ])
             ->authMiddleware([
                 Authenticate::class,
