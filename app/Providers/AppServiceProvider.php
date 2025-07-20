@@ -30,5 +30,8 @@ class AppServiceProvider extends ServiceProvider
                 'dashboard' => 'fluentui-home-checkmark-20-o',
             ], $asImage = false);
         });
+
+
+        
     }
 }
