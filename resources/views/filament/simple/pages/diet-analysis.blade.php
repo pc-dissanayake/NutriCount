@@ -18,10 +18,20 @@ th.rotate > div {
 th.rotate > div > span {
   padding: 1px 5px;
 }
-
-
-</style>
-    <!-- Breadcrumb System -->
+        @media print {
+            button {
+                display: none;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+            }
+        }
+    </style>    <!-- Breadcrumb System -->
     <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
         <a href="{{ url('/simple') }}" class="text-blue-500 hover:underline">Home</a>
         <span class="mx-2">&gt;</span>
@@ -32,6 +42,7 @@ th.rotate > div > span {
 
     <div style="text-align: right; margin-bottom: 10px;">
         <button onclick="printContent('print-area')" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Print</button>
+        <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">Export as Image</button>
     </div>
 
     <div id="print-area">
@@ -113,21 +124,34 @@ th.rotate > div > span {
             window.print();
             document.body.innerHTML = originalContent;
         }
-    </script>
-
-    <style>
-        @media print {
-            button {
-                display: none;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            th, td {
-                border: 1px solid black;
-                padding: 8px;
+        // dom2canvas image export using html2canvas
+        function downloadImage(id) {
+            // Dynamically load html2canvas if not loaded
+            if (typeof html2canvas === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                script.onload = function() {
+                    captureAndOpen(id);
+                };
+                document.body.appendChild(script);
+            } else {
+                captureAndOpen(id);
             }
         }
-    </style>
+
+        function captureAndOpen(id) {
+            const node = document.getElementById(id);
+            html2canvas(node, {
+                backgroundColor: getComputedStyle(document.body).backgroundColor || '#fff',
+                useCORS: true,
+                scale: window.devicePixelRatio
+            }).then(function(canvas) {
+                const dataUrl = canvas.toDataURL('image/png');
+                const win = window.open();
+                win.document.write('<title>Diet Analysis Image</title><img src="' + dataUrl + '" style="max-width:100%;height:auto;display:block;margin:auto;background:' + (document.documentElement.classList.contains('dark') ? '#1e293b' : '#fff') + ';"/>');
+            });
+        }
+    </script>
+
+
 </x-filament-panels::page>
