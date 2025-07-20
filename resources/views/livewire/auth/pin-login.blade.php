@@ -42,7 +42,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Enter PIN')" :description="__('Enter your 6-digit PIN to log in')" />
+    <x-auth-header :title="__(key: 'Enter PIN')" :description="__('Enter your 6-digit PIN to log in')" />
 
     <form wire:submit="loginWithPin" class="flex flex-col gap-6">
         <flux:input
@@ -54,10 +54,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
             minlength="6"
             pattern="[0-9]{6}"
             autocomplete="off"
-            placeholder="000000"
+            placeholder="XXXXXX"
         />
         <div class="flex items-center justify-end">
             <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
         </div>
     </form>
+
+                <div class="mt-8 text-xs text-gray-500 dark:text-gray-400 text-center select-none">
+                &copy; National Hospital of Sri Lanka
+            </div>
 </div>

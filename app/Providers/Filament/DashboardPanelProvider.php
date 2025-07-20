@@ -27,6 +27,7 @@ class DashboardPanelProvider extends PanelProvider
             ->id('dashboard')
             ->path('dashboard')
             ->login()
+             ->sidebarCollapsibleOnDesktop()
             ->authGuard('web')
             ->colors([
                 'primary' => Color::Amber,

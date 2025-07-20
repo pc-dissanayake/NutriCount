@@ -27,12 +27,18 @@ class DietAnalysis extends Page
     public function mount(): void
     {
         $date = request()->query('date');
+        $month = request()->query('month');
+        $year = request()->query('year');
 
-        if (!$date) {
-            throw new NotAcceptableHttpException('Date parameter is required.');
+        if ($date) {
+            $this->date = $date;
+        } elseif ($month) {
+            $this->date = $month;
+        } elseif ($year) {
+            $this->date = $year;
+        } else {
+            throw new NotAcceptableHttpException('Date, month, or year parameter is required.');
         }
-
-        $this->date = $date;
 
         // Load all units
         $this->units = HospitalUnit::all();
@@ -40,7 +46,17 @@ class DietAnalysis extends Page
         // Load all diet types ordered by list_order
         $this->dietTypes = SimpleDiet::orderBy('list_order')->get();
 
-        // Load diet data for the specified date
-        $this->dietData = HospitalUnitDietAmount::where('date', $date)->get();
+        // Load diet data for the specified date/month/year
+        if ($date) {
+            $this->dietData = HospitalUnitDietAmount::where('date', $date)->get();
+        } elseif ($month) {
+            $this->dietData = HospitalUnitDietAmount::where('date', 'like', $month . '%')->get();
+
+            //dd($this->dietData);
+        } elseif ($year) {
+            $this->dietData = HospitalUnitDietAmount::where('date', 'like', $year . '%')->get();
+        } else {
+            $this->dietData = collect();
+        }
     }
 }

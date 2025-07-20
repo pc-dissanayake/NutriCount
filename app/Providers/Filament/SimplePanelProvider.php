@@ -26,6 +26,7 @@ class SimplePanelProvider extends PanelProvider
             ->id('simple')
             ->path('simple')
             ->spa()
+             ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Amber,
             ])

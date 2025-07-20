@@ -47,7 +47,21 @@ th.rotate > div > span {
 
     <div id="print-area">
     <br />    <br />   
-    <h2 class="text-xl font-bold m-4 text-gray-900 dark:text-gray-100 text-center">Analysis of Diets of the Government Hospital at National Hospital of Sri Lanka on {{ $date ?? 'No Date Selected' }}</h2>
+    <h2 class="text-xl font-bold m-4 text-gray-900 dark:text-gray-100 text-center">
+        @php
+            $periodLabel = 'No Date Selected';
+            if (isset($date)) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                    $periodLabel = 'on ' . $date;
+                } elseif (preg_match('/^\d{4}-\d{2}$/', $date)) {
+                    $periodLabel = 'for ' . date('F Y', strtotime($date . '-01'));
+                } elseif (preg_match('/^\d{4}$/', $date)) {
+                    $periodLabel = 'for the year ' . $date;
+                }
+            }
+        @endphp
+        Analysis of Diets of the Government Hospital at National Hospital of Sri Lanka {{ $periodLabel }}
+    </h2>
     <br />    <br />   
     <table style="border-collapse: collapse; width: 100%;" class="p-4">
         <thead>
@@ -79,7 +93,8 @@ th.rotate > div > span {
                 @endphp
                 @foreach ($dietTypes as $dietType)
                     @php
-                        $amount = $dietData->where('hospital_unit_id', $unit->id)->where('simple_diet_id', $dietType->id)->first()->amount ?? 0;
+                        // Sum all amounts for this unit and dietType
+                        $amount = $dietData->where('hospital_unit_id', $unit->id)->where('simple_diet_id', $dietType->id)->sum('amount');
                         if ($dietType->multiply_values) {
                             $amount *= $dietType->primary_amount_value;
                         }
