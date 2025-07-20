@@ -42,13 +42,14 @@ th.rotate > div > span {
 
     <div style="text-align: right; margin-bottom: 10px;">
         <button onclick="printContent('print-area')" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Print</button>
-        <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">Export as Image</button>
+        <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">Print as Image</button>
     </div>
 
     <div id="print-area">
-
-    <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Analysis of Diets of the Government Hospital at National Hospital of Sri Lanka on {{ $date ?? 'No Date Selected' }}</h2>
-    <table style="border-collapse: collapse; width: 100%;">
+    <br />    <br />   
+    <h2 class="text-xl font-bold m-4 text-gray-900 dark:text-gray-100 text-center">Analysis of Diets of the Government Hospital at National Hospital of Sri Lanka on {{ $date ?? 'No Date Selected' }}</h2>
+    <br />    <br />   
+    <table style="border-collapse: collapse; width: 100%;" class="p-4">
         <thead>
             <tr>
                 <th style="border: 1px solid black; padding: 8px;">Unit</th>
@@ -114,6 +115,12 @@ th.rotate > div > span {
         </tr>
         </tbody>
     </table>
+ <br /> 
+    <div class="text-right text-gray-700 dark:text-gray-300 text-sm mt-2">
+        Printed on: {{ now('Asia/Colombo')->format('Y-m-d H:i:s') }}. © National Hospital of Sri Lanka
+    </div>
+        <br />    <br />   
+
     </div>
 
     <script>
@@ -148,7 +155,23 @@ th.rotate > div > span {
             }).then(function(canvas) {
                 const dataUrl = canvas.toDataURL('image/png');
                 const win = window.open();
-                win.document.write('<title>Diet Analysis Image</title><img src="' + dataUrl + '" style="max-width:100%;height:auto;display:block;margin:auto;background:' + (document.documentElement.classList.contains('dark') ? '#1e293b' : '#fff') + ';"/>');
+                // Write a script that prints after the image loads
+                win.document.write(`
+                    <title>Diet Analysis Image</title>
+                    <img id="diet-img" src="${dataUrl}" style="max-width:100%;height:auto;display:block;margin:10px;background:${document.documentElement.classList.contains('dark') ? '#fff' : '#fff'};"/>
+                    <script>
+                        const img = document.getElementById('diet-img');
+                        if (img) {
+                            img.onload = function() {
+                                window.focus();
+                                setTimeout(function() { window.print(); }, 100);
+                            };
+                        } else {
+                            window.print();
+                        }
+                    <\/script>
+                `);
+                win.document.close();
             });
         }
     </script>
