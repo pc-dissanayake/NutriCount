@@ -21,6 +21,7 @@ class SimpleDiet extends Model
         'primary_amount_value',
         'primary_amount_unit',
         'list_order',
+        'multiply_values',
     ];
 
     protected static function boot()

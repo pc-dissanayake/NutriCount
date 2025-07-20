@@ -20,6 +20,7 @@ class SimpleDietResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Diet';
+    
     protected static ?string $label = "Diet Types";
 
     protected static ?int $navigationSort = 2;
@@ -59,7 +60,7 @@ class SimpleDietResource extends Resource
                 Forms\Components\TextInput::make('DietName_tm')->label('Diet Name (Tamil)')->nullable()->columnSpanFull(),
                 Forms\Components\Toggle::make('active')->label('Active')->default(true)->columnSpanFull(),
                 Forms\Components\Section::make('Primary Amount')
-                    ->columns(3)
+                    ->columns(5)
                     ->schema([
                         Forms\Components\TextInput::make('primary_amount_value')
                             ->label('Primary Amount Value')
@@ -67,7 +68,7 @@ class SimpleDietResource extends Resource
                             ->nullable()->columnSpan(2),
                         Forms\Components\Select::make('primary_amount_unit')
                             ->label('Primary Amount Unit')
-                            ->required()
+                            ->required()->columnSpan(2)
                             ->options([
                                 // Mass units
                                 'mcg' => 'mcg (microgram)',
@@ -77,13 +78,9 @@ class SimpleDietResource extends Resource
                                 'oz' => 'oz (ounce)',
                                 'lb' => 'lb (pound)',
                                 'st' => 'st (stone)',
-                                'gr' => 'gr (grain)',
-                                'ct' => 'ct (carat)',
                                 // Fluid/volume units
                                 'ml' => 'ml (milliliter)',
                                 'l' => 'l (liter)',
-                                'cl' => 'cl (centiliter)',
-                                'dl' => 'dl (deciliter)',
                                 'tsp' => 'tsp (teaspoon)',
                                 'tbsp' => 'tbsp (tablespoon)',
                                 'fl oz' => 'fl oz (fluid ounce)',
@@ -91,19 +88,7 @@ class SimpleDietResource extends Resource
                                 'pt' => 'pt (pint)',
                                 'qt' => 'qt (quart)',
                                 'gal' => 'gal (gallon)',
-                                'cc' => 'cc (cubic centimeter)',
-                                'm3' => 'm³ (cubic meter)',
-                                // Imperial/US units
-                                'us_fl_oz' => 'US fl oz (US fluid ounce)',
-                                'uk_fl_oz' => 'UK fl oz (UK fluid ounce)',
-                                'us_cup' => 'US cup',
-                                'uk_cup' => 'UK cup',
-                                'us_pt' => 'US pint',
-                                'uk_pt' => 'UK pint',
-                                'us_qt' => 'US quart',
-                                'uk_qt' => 'UK quart',
-                                'us_gal' => 'US gallon',
-                                'uk_gal' => 'UK gallon',
+                
                                 // Other common units
                                 'piece' => 'piece',
                                 'serving' => 'serving',
@@ -111,11 +96,6 @@ class SimpleDietResource extends Resource
                                 'portion' => 'portion',
                                 'drop' => 'drop',
                                 'pinch' => 'pinch',
-                                'dash' => 'dash',
-                                'sprig' => 'sprig',
-                                'handful' => 'handful',
-                                'bunch' => 'bunch',
-                                'stick' => 'stick',
                                 'sheet' => 'sheet',
                                 'package' => 'package',
                                 'container' => 'container',
@@ -131,6 +111,8 @@ class SimpleDietResource extends Resource
                             ])
                             ->searchable()
                             ->nullable(),
+                        Forms\Components\Toggle::make('multiply_values')
+                            ->label('Multiply Values in Final table')->default(false),
                     ]),
                 Forms\Components\TextInput::make('list_order')
                     ->label('List Order')
@@ -162,6 +144,7 @@ class SimpleDietResource extends Resource
                 Tables\Columns\TextColumn::make('list_order')->label('List Order')->sortable(),
             ])
                         ->defaultSort('list_order')
+            ->paginationPageOptions([25, 50, 100])
             ->filters([
                 //
             ])

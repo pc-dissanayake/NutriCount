@@ -66,16 +66,39 @@
                             <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">Diet Name</th>
                             <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">Amount</th>
                             <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100"></th>
+                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100"></th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $unitSteps = [
+                                // Mass units
+                                'mcg' => '0.001', 'mg' => '0.001', 'g' => '0.1', 'kg' => '0.001', 'oz' => '0.01', 'lb' => '0.01', 'st' => '0.01',
+                                // Fluid/volume units
+                                'ml' => '0.1', 'l' => '0.001', 'tsp' => '0.25', 'tbsp' => '0.25', 'fl oz' => '0.01', 'cup' => '0.01', 'pt' => '0.01', 'qt' => '0.01', 'gal' => '0.01',
+                                // Other common units
+                                'piece' => '1', 'serving' => '1', 'slice' => '1', 'portion' => '1', 'drop' => '1', 'pinch' => '1', 'sheet' => '1', 'package' => '1', 'container' => '1', 'can' => '1', 'bottle' => '1', 'jar' => '1', 'bag' => '1', 'box' => '1', 'bar' => '1', 'packet' => '1', 'tube' => '1', 'unit' => '1',
+                            ];
+                            $singularPluralUnits = [
+                                'piece' => 'pieces', 'serving' => 'servings', 'slice' => 'slices', 'portion' => 'portions', 'drop' => 'drops', 'pinch' => 'pinches', 'sheet' => 'sheets', 'package' => 'packages', 'container' => 'containers', 'can' => 'cans', 'bottle' => 'bottles', 'jar' => 'jars', 'bag' => 'bags', 'box' => 'boxes', 'bar' => 'bars', 'packet' => 'packets', 'tube' => 'tubes', 'unit' => 'units',
+                            ];
+                        @endphp
                         @foreach ($simpleDiets as $diet)
                             <tr>
                                 <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">{{ $diet->DietName_en }}</td>
                                 <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
-                                    <input type="number" name="dietAmounts[{{ $diet->id }}]" class="border rounded-xl px-3 py-2 w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" value="{{ $diet->saved_amount ?? '' }}">
+                                    <input type="number" step="{{ $unitSteps[$diet->primary_amount_unit] ?? '0.001' }}" name="dietAmounts[{{ $diet->id }}]" class="border rounded-xl px-3 py-2 w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" value="{{ $diet->saved_amount ?? '' }}">
                                 </td>
-                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">{{ $diet->primary_amount_unit }}</td>
+                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">{{ $diet->primary_amount_value }}</td>
+                                
+                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">
+                                    @if (array_key_exists($diet->primary_amount_unit, $singularPluralUnits))
+                                        {{ $diet->primary_amount_value == 1 ? $diet->primary_amount_unit : $singularPluralUnits[$diet->primary_amount_unit] }}
+                                    @else
+                                        {{ $diet->primary_amount_unit }}
+                                    @endif
+                                </td>
+                                
                             </tr>
                         @endforeach
                     </tbody>

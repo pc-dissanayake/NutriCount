@@ -49,36 +49,58 @@ th.rotate > div > span {
             </tr>
         </thead>
         <tbody>
-            @foreach ($units as $unit)
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px;">{{ $unit->name }}</td>
-                    @php
-                        $unitTotal = 0;
-                    @endphp
-                    @foreach ($dietTypes as $dietType)
-                        @php
-                            $amount = $dietData->where('hospital_unit_id', $unit->id)->where('simple_diet_id', $dietType->id)->first()->amount ?? 0;
-                            $unitTotal += $amount;
-                        @endphp
-                        <td style="border: 1px solid black; padding: 8px;">
-                            {{ $amount }}
-                        </td>
-                    @endforeach
-                    <td style="border: 1px solid black; padding: 8px; display: none;">{{ $unitTotal }}</td>
-                </tr>
-            @endforeach
+            @php
+            $unitSteps = [
+                // Mass units
+                'mcg' => 0.001, 'mg' => 0.001, 'g' => 0.1, 'kg' => 0.001, 'oz' => 0.01, 'lb' => 0.01, 'st' => 0.01,
+                // Fluid/volume units
+                'ml' => 0.1, 'l' => 0.001, 'tsp' => 0.25, 'tbsp' => 0.25, 'fl oz' => 0.01, 'cup' => 0.01, 'pt' => 0.01, 'qt' => 0.01, 'gal' => 0.01,
+                // Other common units
+                'piece' => 1, 'serving' => 1, 'slice' => 1, 'portion' => 1, 'drop' => 1, 'pinch' => 1, 'sheet' => 1, 'package' => 1, 'container' => 1, 'can' => 1, 'bottle' => 1, 'jar' => 1, 'bag' => 1, 'box' => 1, 'bar' => 1, 'packet' => 1, 'tube' => 1, 'unit' => 1,
+            ];
+        @endphp
+        @foreach ($units as $unit)
             <tr>
-                <td style="border: 1px solid black; padding: 8px; font-weight: bold;">Total</td>
+                <td style="border: 1px solid black; padding: 8px;">{{ $unit->name }}</td>
+                @php
+                    $unitTotal = 0;
+                @endphp
                 @foreach ($dietTypes as $dietType)
                     @php
-                        $columnTotal = $dietData->where('simple_diet_id', $dietType->id)->sum('amount');
+                        $amount = $dietData->where('hospital_unit_id', $unit->id)->where('simple_diet_id', $dietType->id)->first()->amount ?? 0;
+                        if ($dietType->multiply_values) {
+                            $amount *= $dietType->primary_amount_value;
+                        }
+                        $step = $unitSteps[$dietType->primary_amount_unit] ?? 0.001;
+                        $decimals = strpos($step, '.') !== false ? strlen(explode('.', (string)$step)[1]) : 0;
+                        $amount = round($amount, $decimals);
+                        $unitTotal += $amount;
                     @endphp
-                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;">
-                        {{ $columnTotal }}
+                    <td style="border: 1px solid black; padding: 8px;">
+                        {{ $amount }}
                     </td>
                 @endforeach
-                <td style="border: 1px solid black; padding: 8px; font-weight: bold; display: none;">-</td>
+                <td style="border: 1px solid black; padding: 8px; display: none;">{{ $unitTotal }}</td>
             </tr>
+        @endforeach
+        <tr>
+            <td style="border: 1px solid black; padding: 8px; font-weight: bold;">Total</td>
+            @foreach ($dietTypes as $dietType)
+                @php
+                    $columnTotal = $dietData->where('simple_diet_id', $dietType->id)->sum('amount');
+                    if ($dietType->multiply_values) {
+                        $columnTotal *= $dietType->primary_amount_value;
+                    }
+                    $step = $unitSteps[$dietType->primary_amount_unit] ?? 0.001;
+                    $decimals = strpos($step, '.') !== false ? strlen(explode('.', (string)$step)[1]) : 0;
+                    $columnTotal = round($columnTotal, $decimals);
+                @endphp
+                <td style="border: 1px solid black; padding: 8px; font-weight: bold;">
+                    {{ $columnTotal }}
+                </td>
+            @endforeach
+            <td style="border: 1px solid black; padding: 8px; font-weight: bold; display: none;">-</td>
+        </tr>
         </tbody>
     </table>
     </div>

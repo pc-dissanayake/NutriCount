@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('DietName_si')->nullable();
             $table->string('DietName_tm')->nullable();
             $table->boolean('active')->default(true);
+            $table->decimal('primary_amount_value',10,2)->nullable();
+            $table->char('primary_amount_unit')->nullable();
+            $table->integer(column: 'list_order');
+            $table->boolean('multiply_values')->default(false);
             $table->timestamps();
         });
     }
