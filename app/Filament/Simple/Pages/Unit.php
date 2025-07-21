@@ -7,25 +7,36 @@ use App\Models\HospitalUnit;
 
 class Unit extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'bx-food-menu';
 
     protected static string $view = 'filament.simple.pages.unit';
 
-    // You can add properties and methods here to handle data and logic for your page.
-    // For example, to fetch data from the database:
-    // public $data;
-    public $uniqueUnitIds = [];
+    protected static ?string $title = 'Hospital Units Diet Overview';
 
-    public function mount(): void
+    public $unitData = [];
+
+    public function mount()
     {
         if (!static::hasDateTag()) {
-            abort(406, 'Missing required date tag.');
+            return redirect()->to(route('filament.simple.pages.unit', ['date' => now()->toDateString()]));
         }
 
-        // Load all units
-        $this->uniqueUnitIds = HospitalUnit::query()
-            ->pluck('name', 'id')
-            ->toArray();
+        // Load all units and check if data exists for the given date
+        $date = request('date');
+        $units = HospitalUnit::query()->orderBy('order_id')->pluck('name', 'id')->toArray();
+        $this->unitData = [];
+        foreach ($units as $id => $name) {
+            $dataAvailable = \App\Models\HospitalUnitDietAmount::where('hospital_unit_id', $id)
+                ->where('date', $date)
+                ->exists();
+            $this->unitData[] = [
+                'id' => $id,
+                'name' => $name,
+                'dataavailable' => $dataAvailable,
+            ];
+        }
+
+       // dd( $this->unitData);
     }
 
     public static function hasDateTag(): bool

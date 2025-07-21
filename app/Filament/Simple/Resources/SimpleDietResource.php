@@ -18,7 +18,7 @@ class SimpleDietResource extends Resource
 {
     protected static ?string $model = SimpleDiet::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fluentui-food-fish-20';
     protected static ?string $navigationGroup = 'Diet';
     
     protected static ?string $label = "Diet Types";

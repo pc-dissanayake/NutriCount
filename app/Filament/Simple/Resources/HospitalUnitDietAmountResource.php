@@ -14,10 +14,20 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class HospitalUnitDietAmountResource extends Resource
-{
-    protected static ?string $model = HospitalUnitDietAmount::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+{
+
+    protected static ?string $model = HospitalUnitDietAmount::class;
+    protected static ?string $navigationIcon = 'healthicons-o-clinical-f';
+
+    protected static ?string $navigationGroup = 'Diet Amounts';
+
+    protected static ?string $navigationLabel = 'List of Hospital Unit Diet Amounts';
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {
@@ -51,20 +61,31 @@ class HospitalUnitDietAmountResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('date')
+                    ->label('Date')
+                    ->date(),
+                Tables\Columns\TextColumn::make('hospitalUnit.name')
+                    ->label('Hospital Unit')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('simpleDiet.DietName_en')
+                    ->label('Simple Diet')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('patient.full_name')
+                    ->label('Patient')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('Amount'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                // No bulk delete or edit actions
+            ])
+            ->paginationPageOptions([100, 250, 'all']);
     }
 
     public static function getRelations(): array
@@ -78,10 +99,7 @@ class HospitalUnitDietAmountResource extends Resource
     {
         return [
             'index' => Pages\ListHospitalUnitDietAmounts::route('/'),
-            'create' => Pages\CreateHospitalUnitDietAmount::route('/create'),
             'view' => Pages\ViewHospitalUnitDietAmount::route('/{record}'),
-            'edit' => Pages\EditHospitalUnitDietAmount::route('/{record}/edit'),
-            'calendar' => Pages\CalendarHospitalUnitDietAmounts::route('/calendar'),
         ];
     }
 }

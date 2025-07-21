@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Simple\Pages\Calender;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -35,7 +36,7 @@ class SimplePanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Simple/Resources'), for: 'App\\Filament\\Simple\\Resources')
             ->discoverPages(in: app_path('Filament/Simple/Pages'), for: 'App\\Filament\\Simple\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Calender::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Simple/Widgets'), for: 'App\\Filament\\Simple\\Widgets')
             ->widgets([

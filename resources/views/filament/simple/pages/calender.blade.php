@@ -21,12 +21,12 @@
             <span class="text-xl font-bold">{{ $currentMonth->format('F Y') }}</span>
             <a href="?month={{ $nextMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700"></a>
         </div>
-        <div class="mb-2 text-sm text-gray-700 dark:text-gray-300">
+        {{-- <div class="mb-2 text-sm text-gray-700 dark:text-gray-300">
             Current Month: <span class="font-semibold">{{ $currentMonthName }}</span> |
             Month Number: <span class="font-semibold">{{ $currentMonthNumber }}</span> |
             Year: <span class="font-semibold">{{ $currentYear }}</span> |
             Current Date: <span class="font-semibold">{{ $currentDate }}</span>
-        </div>
+        </div> --}}
         <br />
         <div class="grid grid-cols-7 gap-2 mb-4">
             <div class="font-semibold text-center">Mon</div>
@@ -53,14 +53,30 @@
             @foreach ($calendar as $day)
                 @php
                     $dateStr = $day->format('Y-m-d');
-                    $hasData = isset($hospitalUnitDietAmounts[$dateStr]);
+                    $hasData = in_array($dateStr, $hospitalUnitDietAmounts);
+                    $isToday = $day->isToday();
                     $isFutureDate = $day->isFuture();
+                    $bgColor = '';
+                    if ($isToday) {
+                        // Today (with or without data)
+                            $bgColor = 'background-color: #00FFE5; color: #000;'; // cyan, black text
+                    } elseif ($isFutureDate) {
+                        // Future (with or without data)
+                            $bgColor = 'background-color: #DDDDD9; color: #fff;'; // dark orange, white text
+                    } elseif ($hasData) {
+                        // Past with data
+                        $bgColor = 'background-color: #20E680; color: #000;'; // light green, dark text
+                    } else {
+                        // Past without data
+                        $bgColor = 'background-color: #E6E31E; color: #000;'; // light gray, gray text
+                    }
                 @endphp
-                <div class="text-center p-1 {{ $hasData ? 'bg-success-500 rounded text-white' : 'bg-primary-500 rounded text-white' }}">
+                <div class="text-center p-1 rounded"
+                     style="{{ $bgColor }}">
                     @if ($isFutureDate)
                         <span class="text-gray-500">{{ $day->day }}</span>
                     @else
-                        <a href="{{ url('/simple/unit?date=' . $dateStr) }}" class="hover:underline">{{ $day->day }}</a>
+                        <a href="{{ url('/simple/unit?date=' . $dateStr) }}" class="hover:underline" style="color:inherit;">{{ $day->day }}</a>
                     @endif
                 </div>
             @endforeach
@@ -80,7 +96,7 @@
                     <a href="{{ url('/simple/diet-analysis') . '?month=' . urlencode($currentMonth->format('Y-m')) }}"
                         class="fi-btn fi-btn-primary h-full rounded-md p-3 sm:rounded-xl sm:p-4"
                         style="background-color: #14b8a6; color: white; border: 1px solid #0d9488;">
-                        Go to Total Diet Analysis of National Hospital of Sri Lanka for month {{ $currentMonth->format('M Y') ?? 'No Month Selected' }}
+                        Go to Total Diet Analysis of National Hospital of Sri Lanka for month {{ $currentMonth->format('F Y') ?? 'No Month Selected' }}
                     </a>
                 </div>
                 <br />

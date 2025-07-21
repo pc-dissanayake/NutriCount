@@ -33,9 +33,19 @@ th.rotate > div > span {
         }
     </style>    <!-- Breadcrumb System -->
     <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
-        <a href="{{ url('/simple') }}" class="text-blue-500 hover:underline">Home</a>
+        <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
         <span class="mx-2">&gt;</span>
-        <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
+        @php
+            $isDisabled = false;
+            if (request()->has('year') || request()->has('month')) {
+            $isDisabled = true;
+            }
+        @endphp
+        @if ($isDisabled)
+            <span class="text-gray-500 dark:text-gray-400 cursor-not-allowed">{{ $date ?? 'No Date Selected' }}</span>
+        @else
+            <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
+        @endif
         <span class="mx-2">&gt;</span>
         <span class="text-gray-500 dark:text-gray-400">NHSL Total Diet</span>
     </nav>
@@ -45,7 +55,7 @@ th.rotate > div > span {
         <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">Print as Image</button>
     </div>
 
-    <div id="print-area">
+    <div id="print-area" style="background: #fff; padding: 2%;">
     <br />    <br />   
     <h2 class="text-xl font-bold m-4 text-gray-900 dark:text-gray-100 text-center">
         @php
@@ -132,7 +142,7 @@ th.rotate > div > span {
     </table>
  <br /> 
     <div class="text-right text-gray-700 dark:text-gray-300 text-sm mt-2">
-        Printed on: {{ now('Asia/Colombo')->format('Y-m-d H:i:s') }}. © National Hospital of Sri Lanka
+        Generated at: {{ now('Asia/Colombo')->format('Y-m-d H:i:s') }}. © National Hospital of Sri Lanka
     </div>
         <br />    <br />   
 
@@ -166,7 +176,7 @@ th.rotate > div > span {
             html2canvas(node, {
                 backgroundColor: getComputedStyle(document.body).backgroundColor || '#fff',
                 useCORS: true,
-                scale: window.devicePixelRatio
+                scale: 4 // Highest resolution
             }).then(function(canvas) {
                 const dataUrl = canvas.toDataURL('image/png');
                 const win = window.open();

@@ -7,7 +7,7 @@ use App\Models\HospitalUnitDietAmount;
 
 class Calender extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-c-calendar-date-range';
 
     protected static string $view = 'filament.simple.pages.calender';
 
@@ -22,20 +22,22 @@ class Calender extends Page
 
     public function mount(): void
     {
+        $month = request('month') ?? now()->format('Y-m');
         $this->hospitalUnitDietAmounts = HospitalUnitDietAmount::query()
-            ->select('date')
+            ->where('date', 'like', $month . '%')
             ->distinct()
+            ->orderBy('date', 'desc')
             ->pluck('date')
-            ->flip()
             ->toArray();
 
-           // dd($this->hospitalUnitDietAmounts);
+         //   dd($this->hospitalUnitDietAmounts);
     }
 
     protected function getViewData(): array
     {
         return [
             'uniqueDates' => $this->getUniqueDates(),
+            'hospitalUnitDietAmounts' => $this->hospitalUnitDietAmounts,
         ];
     }
 

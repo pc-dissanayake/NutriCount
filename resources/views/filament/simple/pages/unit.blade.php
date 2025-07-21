@@ -2,7 +2,7 @@
 
     <!-- Breadcrumb System -->
     <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
-        <a href="{{ url('/simple') }}" class="text-blue-500 hover:underline">Home</a>
+        <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
         <span class="mx-2">&gt;</span>
         <span class="text-gray-500 dark:text-gray-400">{{ urlencode(request('date')) ?? 'No Date Selected' }}</span>
     </nav>
@@ -22,15 +22,15 @@
     <section class="bg-gray-200 dark:bg-gray-800 p-6 sm:p-10 md:p-8 rounded-xl">
         <div class="container mx-auto">
             <div class="grid grid-cols-4 gap-4">
-                @foreach (collect($uniqueUnitIds)->sort() as $unitId => $unitName)
-                    <a href="{{ url('/simple/unit-diet-entry') . '?date=' . urlencode(request('date')) . '&unit_id=' . urlencode($unitId) }}"
-                        class="h-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 p-3 hover:border-gray-400 dark:hover:border-gray-500 sm:rounded-lg sm:p-4">
+                @foreach (collect($unitData)->sortBy('name') as $unit)
+                    <a href="{{ url('/simple/unit-diet-entry') . '?date=' . urlencode(request('date')) . '&unit_id=' . urlencode($unit['id']) }}"
+                        class="h-full rounded-xl border p-3 sm:rounded-lg sm:p-4 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                        style="{{ $unit['dataavailable'] ? (
+                            'background-color: #d1fae5; border-color: #4ade80;' . (request()->has('theme') && request('theme') === 'dark' ? 'background-color: #064e3b; border-color: #22c55e;' : '')
+                        ) : (request()->has('theme') && request('theme') === 'dark' ? 'background-color: #111827;' : 'background-color: #fff;') }}">
                         <span class="text-sm mb-1 font-semibold text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-gray-300 sm:mb-2 sm:text-md">
-                            {{ $unitName }}
+                            {{ $unit['name'] }}
                         </span>
-                        {{-- <span class="text-xs leading-normal text-gray-400 dark:text-gray-500 sm:block">
-                            Go to Diet Entry for the Unit
-                        </span> --}}
                     </a>
                 @endforeach
             </div>

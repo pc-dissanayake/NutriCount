@@ -9,7 +9,7 @@ use Filament\Pages\Page;
 
 class UnitDietEntry extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'fluentui-food-24';
 
     protected static string $view = 'filament.simple.pages.unit-diet-entry';
 

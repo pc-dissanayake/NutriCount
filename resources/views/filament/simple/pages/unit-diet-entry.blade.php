@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     <!-- Breadcrumb System -->
     <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
-        <a href="{{ url('/simple') }}" class="text-blue-500 hover:underline">Home</a>
+        <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
         <span class="mx-2">&gt;</span>
         <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
         <span class="mx-2">&gt;</span>
