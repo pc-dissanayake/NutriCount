@@ -85,7 +85,7 @@ class HospitalUnitDietAmountResource extends Resource
             ->bulkActions([
                 // No bulk delete or edit actions
             ])
-            ->paginationPageOptions([100, 250, 'all']);
+            ->paginationPageOptions([50,100, 250, 'all']);
     }
 
     public static function getRelations(): array
