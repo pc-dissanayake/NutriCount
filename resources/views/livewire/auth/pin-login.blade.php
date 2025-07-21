@@ -7,7 +7,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.auth')] class extends Component {
+new #[Layout('components.layouts.auth-no-logo')] class extends Component {
     #[Validate('required|digits:6')]
     public string $pin = '';
 
@@ -59,9 +59,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <div class="flex items-center justify-end">
             <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
         </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400 text-center">
+             <a href="{{ route('dashboard') }}" class="text-blue-600 hover:underline">{{ __('Login with Password') }}</a>
+        </div>
     </form>
 
-                <div class="mt-8 text-xs text-gray-500 dark:text-gray-400 text-center select-none">
-                &copy; National Hospital of Sri Lanka
-            </div>
+    <div class="mt-8 text-xs text-gray-500 dark:text-gray-400 text-center select-none">
+        &copy; National Hospital of Sri Lanka
+    </div>
 </div>

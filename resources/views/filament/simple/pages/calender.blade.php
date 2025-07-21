@@ -59,7 +59,7 @@
                     $bgColor = '';
                     if ($isToday) {
                         // Today (with or without data)
-                            $bgColor = 'background-color: #00FFE5; color: #000;'; // cyan, black text
+                        $bgColor = 'background-color: #00FFE5; color: #000; border: 3px solid #000;'; // cyan, black text, teal border
                     } elseif ($isFutureDate) {
                         // Future (with or without data)
                             $bgColor = 'background-color: #DDDDD9; color: #fff;'; // dark orange, white text

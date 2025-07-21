@@ -3,15 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\UnitDietEntryController;
+use App\Http\Controllers\WelcomeController;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
-Route::get('/dashboard', function () {
- return   route('dashboard' );
-
-})->name('dashboard');
+Route::get('/dashboard', fn () => redirect()->route('filament.dashboard.pages.dashboard'))->name('dashboard');
 
 
 
