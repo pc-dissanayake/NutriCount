@@ -1,5 +1,4 @@
 <x-filament-panels::page>
-
     <!-- Breadcrumb System -->
     <nav class="flex items-center justify-between text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
         <div class="flex items-center">
@@ -19,6 +18,7 @@
             @endif
         </div>
     </nav>
+                @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
     <div class="bg-gray-200 dark:bg-gray-900 p-6 sm:p-10 md:p-16 mt-20 rounded-xl">
         <div class="container mx-auto">
             <!-- Add link to Diet Analysis -->
@@ -30,13 +30,24 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Unit Cards Section -->
     <section class="bg-gray-200 dark:bg-gray-800 p-6 sm:p-10 md:p-8 rounded-xl">
         <div class="container mx-auto">
             <div class="grid grid-cols-4 gap-4">
                 @foreach (collect($unitData)->sortBy('name') as $unit)
-                    <a href="{{ url('/simple/unit-diet-entry') . '?date=' . urlencode(request('date')) . '&unit_id=' . urlencode($unit['id']) }}"
+                    @php
+                        $params = [
+                            'date' => request('date'),
+                            'unit_id' => $unit['id']
+                        ];
+                        if (Auth::user() && Auth::user()->default_lang) {
+                            $params['Language'] = Auth::user()->default_lang;
+                        }
+                        $url = url('/simple/unit-diet-entry') . '?' . http_build_query($params);
+                    @endphp
+                    <a href="{{ $url }}"
                         class="h-full rounded-xl border p-3 sm:rounded-lg sm:p-4 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
                         style="{{ $unit['dataavailable'] ? (
                             'background-color: #d1fae5; border-color: #4ade80;' . (request()->has('theme') && request('theme') === 'dark' ? 'background-color: #064e3b; border-color: #22c55e;' : '')

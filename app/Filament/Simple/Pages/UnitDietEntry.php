@@ -6,6 +6,7 @@ use App\Models\HospitalUnit;
 use App\Models\SimpleDiet;
 use App\Models\HospitalUnitDietAmount;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Auth;
 
 class UnitDietEntry extends Page
 {
@@ -22,7 +23,23 @@ class UnitDietEntry extends Page
     public function mount(): void
     {
         $this->date = request('date');
-        $this->units = HospitalUnit::orderBy('name')->get();
+        $user = Auth::user();
+        
+        // Check if user has permission to list all units
+        if (userHasPermission($user, 'list_all.unit-simple_panel')) {
+            // Load all units
+            $this->units = HospitalUnit::orderBy('name')->get();
+        } else {
+            // Load only units assigned to the user
+            $assignedUnitIds = $user->units_assigned ?? [];
+            if (empty($assignedUnitIds)) {
+                $this->units = HospitalUnit::whereRaw('1 = 0')->get(); // Empty collection
+            } else {
+                $this->units = HospitalUnit::whereIn('id', $assignedUnitIds)
+                    ->orderBy('name')
+                    ->get();
+            }
+        }
 
         $unitId = request('unit_id');
 

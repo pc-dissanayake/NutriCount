@@ -64,8 +64,9 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->required(),
-                Forms\Components\TextInput::make('email')->email()->required(),
+                Forms\Components\TextInput::make('name')->required()->columnspanfull(),
+                Forms\Components\TextInput::make('email')->email()
+                ->required()->columnspanfull(),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => $state ? bcrypt($state) : null)
@@ -83,6 +84,19 @@ class UserResource extends Resource
                     ])
                     ->default('Guest')
                     ->required(),
+                Forms\Components\Select::make('default_lang')
+                    ->label('Default Language')
+                    ->options([
+                        'Sin' => 'Sinhala',
+                        'Eng' => 'English',
+                        'Tam' => 'Tamil',
+                    ])
+                    ->default('Eng'),
+                Forms\Components\Select::make('units_assigned')
+                    ->label('Units Assigned')
+                    ->options(\App\Models\HospitalUnit::where('active', true)->pluck('name', 'id'))
+                    ->multiple()
+                    ->searchable(),
                 Forms\Components\Toggle::make('active')->label('Active'),
             ]);
     }
@@ -94,6 +108,16 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('role')->searchable(),
+                Tables\Columns\TextColumn::make('default_lang')->label('Language'),
+                Tables\Columns\TextColumn::make('units_assigned')
+                    ->label('Units Assigned')
+                    ->formatStateUsing(function ($state) {
+                        if (is_array($state) && count($state) > 0) {
+                            $units = \App\Models\HospitalUnit::whereIn('id', $state)->pluck('name')->toArray();
+                            return implode(', ', $units);
+                        }
+                        return 'No units assigned';
+                    }),
                 Tables\Columns\ToggleColumn::make('active'),
             ])
             ->filters([

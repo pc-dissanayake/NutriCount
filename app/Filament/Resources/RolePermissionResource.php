@@ -20,6 +20,10 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\Section as InfolistSection;
 
 class RolePermissionResource extends Resource
 {
@@ -33,17 +37,46 @@ class RolePermissionResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('permission')->required()->columnSpanFull(),
-                Section::make('Permissions')
-                    ->description('Assign permissions to this role')
-                    ->columns(5)
+                Section::make('Permission Information')
+                    ->description('Define the permission name and which roles have access to this permission.')
                     ->schema([
-                        Toggle::make('admin')->label('Admin Access')->default((true)),
-                        Toggle::make('level1')->label(config('app.level_names.level1').' Access'),
-                        Toggle::make('level2')->label(config('app.level_names.level2').' Access'),
-                        Toggle::make('user')->label('User Access'),
-                        Toggle::make('guest')->label('Guest Access'),
-                        Toggle::make('api_only')->label('API Only Access'),
+                        TextInput::make('permission')
+                            ->label('Permission Name')
+                            ->required()
+                            ->columnSpanFull()
+                            ->helperText('Enter a unique permission name (e.g., create.user, view.reports, edit.settings)'),
+                        TextInput::make('description')
+                            ->label('Description')
+                            ->required()
+                            ->columnSpanFull()
+                            ->helperText('Provide a clear description of what this permission allows users to do'),
+                    ]),
+                Section::make('Role Access Permissions')
+                    ->description('Select which user roles should have access to this permission. Users with these roles will be able to perform the action defined by this permission.')
+                    ->columns(7)
+                    ->schema([
+                        Toggle::make('admin')
+                            ->label('Admin Access')
+                            ->default(true)
+                            ->helperText('Super administrators with full system access'),
+                        Toggle::make('level1')
+                            ->label(config('app.level_names.level1').' Access')
+                            ->helperText('Senior level users'),
+                        Toggle::make('level2')
+                            ->label(config('app.level_names.level2').' Access')
+                            ->helperText('Mid-level users'),
+                        Toggle::make('level3')
+                            ->label(config('app.level_names.level3').' Access')
+                            ->helperText('Junior level users'),
+                        Toggle::make('user')
+                            ->label('User Access')
+                            ->helperText('Standard system users'),
+                        Toggle::make('guest')
+                            ->label('Guest Access')
+                            ->helperText('Limited access guest users'),
+                        Toggle::make('api_only')
+                            ->label('API Only Access')
+                            ->helperText('API-only service accounts'),
                     ])
                     ->columnSpanFull(),
                 
@@ -53,26 +86,132 @@ class RolePermissionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->description('Manage system permissions and control which user roles can access different features and actions in the application.')
             ->columns([
-                TextColumn::make('permission')->searchable(),
-                ToggleColumn::make('admin'),
-                ToggleColumn::make('level1')->label(config('app.level_names.level1')),
-                ToggleColumn::make('level2')->label(config('app.level_names.level2')),
-                ToggleColumn::make('level3')->label(config('app.level_names.level3')),
-                ToggleColumn::make('user'),
-                ToggleColumn::make('guest'),
-                ToggleColumn::make('api_only'),
+                TextColumn::make('permission')
+                    ->label('Permission Name')
+                    ->searchable()
+                    ->sortable()
+                    ->description(fn ($record) => $record->description ?? 'Unique Permission')
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        if (strlen($state) > 50) {
+                            return $state;
+                        }
+                        return null;
+                    }),
+                    
+                ToggleColumn::make('admin')
+                    ->label('Admin')
+                    ->tooltip('Admin users have this permission'),
+                ToggleColumn::make('level1')
+                    ->label(config('app.level_names.level1'))
+                    ->tooltip(config('app.level_names.level1') . ' users have this permission'),
+                ToggleColumn::make('level2')
+                    ->label(config('app.level_names.level2'))
+                    ->tooltip(config('app.level_names.level2') . ' users have this permission'),
+                ToggleColumn::make('level3')
+                    ->label(config('app.level_names.level3'))
+                    ->tooltip(config('app.level_names.level3') . ' users have this permission'),
+                ToggleColumn::make('user')
+                    ->label('User')
+                    ->tooltip('Standard users have this permission'),
+                ToggleColumn::make('guest')
+                    ->label('Guest')
+                    ->tooltip('Guest users have this permission'),
+                ToggleColumn::make('api_only')
+                    ->label('API Only')
+                    ->tooltip('API-only accounts have this permission'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+               // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                InfolistSection::make('Permission Details')
+                    ->schema([
+                        TextEntry::make('permission')
+                            ->label('Permission Name')
+                            ->size(TextEntry\TextEntrySize::Large)
+                            ->weight('bold'),
+                        TextEntry::make('description')
+                            ->label('Description')
+                            ->size(TextEntry\TextEntrySize::Medium),
+                        
+                    ])->columns(1),
+                
+                InfolistSection::make('Role Access Permissions')
+                    ->description('Shows which roles have access to this permission')
+                    ->schema([
+                        IconEntry::make('admin')
+                            ->label('Admin Access')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
+                        
+                        IconEntry::make('level1')
+                            ->label(config('app.level_names.level1') . ' Access')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
+                        
+                        IconEntry::make('level2')
+                            ->label(config('app.level_names.level2') . ' Access')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
+                        
+                        IconEntry::make('level3')
+                            ->label(config('app.level_names.level3') . ' Access')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
+                        
+                        IconEntry::make('user')
+                            ->label('User Access')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
+                        
+                        IconEntry::make('guest')
+                            ->label('Guest Access')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
+                        
+                        IconEntry::make('api_only')
+                            ->label('API Only Access')
+                            ->boolean()
+                            ->trueIcon('heroicon-o-check-circle')
+                            ->falseIcon('heroicon-o-x-circle')
+                            ->trueColor('success')
+                            ->falseColor('danger'),
+                    ])->columns(8),
             ]);
     }
 
@@ -88,43 +227,44 @@ class RolePermissionResource extends Resource
         return [
             'index' => Pages\ListRolePermissions::route('/'),
             'create' => Pages\CreateRolePermission::route('/create'),
+            'view' => Pages\ViewRolePermission::route('/{record}'),
             'edit' => Pages\EditRolePermission::route('/{record}/edit'),
         ];
     }
 
-    // public static function canCreate(): bool
-    // {
-    //     $user = Auth::user();
-    //     return $user ? userHasPermission($user, 'create.role_permission') : false;
-    // }
+    public static function canCreate(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'create.role_permissions') : false;
+    }
 
-    // public static function canEdit(Model $record): bool
-    // {
-    //     $user = Auth::user();
-    //     return $user ? userHasPermission($user, 'edit.role_permission') : false;
-    // }
+    public static function canEdit(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'edit.role_permissions') : false;
+    }
 
-    // public static function canDelete(Model $record): bool
-    // {
-    //     $user = Auth::user();
-    //     return $user ? userHasPermission($user, 'delete.role_permission') : false;
-    // }
+    public static function canDelete(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.role_permissions') : false;
+    }
 
-    // public static function canDeleteAny(): bool
-    // {
-    //     $user = Auth::user();
-    //     return $user ? userHasPermission($user, 'delete.role_permission') : false;
-    // }
+    public static function canDeleteAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.role_permissions') : false;
+    }
 
-    // public static function canView(Model $record): bool
-    // {
-    //     $user = Auth::user();
-    //     return $user ? userHasPermission($user, 'view.role_permission') : false;
-    // }
+    public static function canView(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'view.role_permissions') : false;
+    }
 
-    // public static function canViewAny(): bool
-    // {
-    //     $user = Auth::user();
-    //     return $user ? userHasPermission($user, 'list.role_permission') : false;
-    // }
+    public static function canViewAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'list.role_permissions') : false;
+    }
 }

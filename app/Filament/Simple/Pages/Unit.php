@@ -4,6 +4,7 @@ namespace App\Filament\Simple\Pages;
 
 use Filament\Pages\Page;
 use App\Models\HospitalUnit;
+use Illuminate\Support\Facades\Auth;
 
 class Unit extends Page
 {
@@ -17,13 +18,39 @@ class Unit extends Page
 
     public function mount()
     {
+        
+        $user = Auth::user();
+        //dd(userHasPermission($user, 'view.unit-simple_panel'));
+        if (!userHasPermission($user, 'view.unit-simple_panel') && !userHasPermission($user, 'list_all.unit-simple_panel')) {
+            abort(403, 'Access denied. You do not have permission to view the units.');
+        }
+
         if (!static::hasDateTag()) {
             return redirect()->to(route('filament.simple.pages.unit', ['date' => now()->toDateString()]));
         }
 
-        // Load all units and check if data exists for the given date
+        // Load units based on permissions
         $date = request('date');
-        $units = HospitalUnit::query()->orderBy('order_id')->pluck('name', 'id')->toArray();
+        
+        // Check if user has permission to list all units
+        if (userHasPermission($user, 'list_all.unit-simple_panel')) {
+            // Load all units
+            $units = HospitalUnit::query()->orderBy('order_id')->where('active',true)->pluck('name', 'id')->toArray();
+        } else {
+            // Load only units assigned to the user
+            $assignedUnitIds = $user->units_assigned ?? [];
+            if (empty($assignedUnitIds)) {
+                $units = [];
+            } else {
+                $units = HospitalUnit::query()
+                    ->whereIn('id', $assignedUnitIds)
+                    ->orderBy('order_id')
+                    ->where('active',true)
+                    ->pluck('name', 'id')
+                    ->toArray();
+            }
+        }
+        
         $this->unitData = [];
         foreach ($units as $id => $name) {
             $dataAvailable = \App\Models\HospitalUnitDietAmount::where('hospital_unit_id', $id)

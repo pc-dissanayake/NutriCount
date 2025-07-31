@@ -25,9 +25,7 @@ Route::middleware('guest')->group(function () {
     }
 });
 
-Route::middleware(['auth'
-//,'CheckUserActive'
-])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Volt::route('verify-email', 'auth.verify-email')
         ->name('verification.notice');
 

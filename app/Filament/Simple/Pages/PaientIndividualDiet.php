@@ -6,6 +6,7 @@ use App\Models\HospitalUnit;
 use App\Models\HospitalUnitDietAmount;
 use App\Models\SimpleDiet;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Auth;
 
 class PaientIndividualDiet extends Page
    
@@ -28,6 +29,21 @@ class PaientIndividualDiet extends Page
 
     public function mount(): void
     {
+        $user = Auth::user();
+        
+        // Check if user has permission to add individual diet data
+        if (!userHasPermission($user, 'add_individual_diet_data.Patient')) {
+            abort(403, 'You do not have permission to add individual diet data.');
+        }
+
+        // Check unit access permissions
+        $hasAccessToAllUnits = userHasPermission($user, 'list_all.unit-simple_panel');
+        $hasViewUnitPermission = userHasPermission($user, 'view.unit-simple_panel');
+        
+        if (!$hasAccessToAllUnits && !$hasViewUnitPermission) {
+            abort(403, 'You do not have permission to access unit data.');
+        }
+
         $this->date = request('date');
         $this->unitId = request('unit_id');
         $this->selected_patient_id = request('patient_id');
@@ -35,6 +51,16 @@ class PaientIndividualDiet extends Page
         // Load only the selected unit and its patients
         if ($this->unitId) {
             $unit = \App\Models\HospitalUnit::with('patients')->find($this->unitId);
+            
+            // Check if user has access to this specific unit
+            if ($unit && !$hasAccessToAllUnits) {
+                // If user doesn't have access to all units, check if this unit is assigned to them
+                $assignedUnitIds = $user->units_assigned ?? [];
+                if (!in_array($this->unitId, $assignedUnitIds)) {
+                    abort(403, 'You do not have access to this unit.');
+                }
+            }
+            
             $this->units = $unit ? collect([$unit]) : collect();
             $this->patients = ($unit && isset($unit->patients)) ? $unit->patients : collect();
         } else {

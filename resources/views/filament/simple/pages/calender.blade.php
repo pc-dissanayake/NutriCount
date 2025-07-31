@@ -112,26 +112,31 @@
         </div>
         
         <!-- Diet Analysis Quick Links -->
+        @if( userHasPermission(Auth::user(), 'view.monthly_diet_analysis_calender_simple-panel') || userHasPermission(Auth::user(), 'view.yearly_diet_analysis_calender_simple-panel'))
         <div class="bg-gray-200 dark:bg-gray-900 p-6 sm:p-10 md:p-16 mt-20 rounded-xl">
             <div class="container mx-auto m-4 p-4">
                 <!-- Add link to Diet Analysis for selected month -->
                 <div class="mb-4">
+                    @if(Auth::user() && userHasPermission(Auth::user(), 'view.monthly_diet_analysis_calender_simple-panel'))
                     <a href="{{ url('/simple/diet-analysis') . '?month=' . urlencode($currentMonth->format('Y-m')) }}"
                         class="fi-btn fi-btn-primary h-full rounded-md p-3 sm:rounded-xl sm:p-4"
                         style="background-color: #0019FF; color: white; border: 1px solid #0d9488;">
-                        Go to Total Diet Analysis of {{ env('HOSPITAL_NAME') }} for the month {{ $currentMonth->format('F Y') ?? 'No Month Selected' }}
+                        Go to Total Diet Analysis of {{ config('app.hospital_name') }} for the month {{ $currentMonth->format('F Y') ?? 'No Month Selected' }}
                     </a>
+                    @endif
+
                 </div>
                 <br />
                 <!-- Add link to Diet Analysis for selected year -->
                 <div>
-                    <a href="{{ url('/simple/diet-analysis') . '?year=' . urlencode($currentMonth->format('Y')) }}"
+                    @if(Auth::user() && userHasPermission(Auth::user(), 'view.yearly_diet_analysis_calender_simple-panel'))<a href="{{ url('/simple/diet-analysis') . '?year=' . urlencode($currentMonth->format('Y')) }}"
                         class="fi-btn fi-btn-primary h-full rounded-md p-3 sm:rounded-xl sm:p-4"
                         style="background-color: #0019FF; color: white; border: 1px solid #0d9488;">
-                        Go to Total Diet Analysis of {{ env('HOSPITAL_NAME') }} for the year {{ $currentMonth->format('Y') ?? 'No Year Selected' }}
-                    </a>
+                        Go to Total Diet Analysis of {{ config('app.hospital_name') }} for the year {{ $currentMonth->format('Y') ?? 'No Year Selected' }}
+                    </a>@endif
                 </div>
             </div>
         </div>
+        @endif
     </div>
 </x-filament-panels::page>

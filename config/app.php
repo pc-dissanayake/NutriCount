@@ -137,5 +137,6 @@ return [
         'level2' => env('LEVEL_2_NAME', 'Level 2-'),
         'level3' => env('LEVEL_3_NAME', 'Level 3-'),
     ],
+    'hospital_name' => env('HOSPITAL_NAME', 'National Hospital Sri Lanka - Colombo'),
 
 ];

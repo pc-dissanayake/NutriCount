@@ -15,6 +15,7 @@ class RolePermission extends Model
     public $timestamps = false;
     protected $fillable = [
         'permission',
+        'description',
         'admin',
         'level1',
         'level2',

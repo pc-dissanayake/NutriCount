@@ -13,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class HospitalUnitResource extends Resource
 {
@@ -83,11 +85,12 @@ class HospitalUnitResource extends Resource
                 Tables\Columns\TextColumn::make('order_id')->label('Order ID')->sortable(),
                 Tables\Columns\TextColumn::make('name')->label('Name')->searchable(),
                 Tables\Columns\TextColumn::make('type')->label('Type'),
-                Tables\Columns\TextColumn::make('identifier')->label('Identifier'),
                 Tables\Columns\TextColumn::make('alias')->label('Alias'),
-                Tables\Columns\TextColumn::make('description')->label('Description'),
                 Tables\Columns\TextColumn::make('tags')->label('Tags')->formatStateUsing(fn($state) => is_array($state) ? implode(', ', $state) : $state),
-                Tables\Columns\ToggleColumn::make('active')->label('Active'),
+                Tables\Columns\ToggleColumn::make('active')
+                    ->label('Active')
+                    ->disabled(fn () => !userHasPermission(Auth::user(), 'edit.HospitalUnit')),
+            
             ])
             ->defaultSort('order_id')
             ->filters([
@@ -118,5 +121,41 @@ class HospitalUnitResource extends Resource
             'edit' => Pages\EditHospitalUnit::route('/{record}/edit'),
             'view' => Pages\ViewHospitalUnit::route('/{record}'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'create.HospitalUnit') : false;
+    }
+    
+    public static function canEdit(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'edit.HospitalUnit') : false;
+    }
+    
+    public static function canDelete(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.HospitalUnit') : false;
+    }
+    
+    public static function canDeleteAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.HospitalUnit') : false;
+    }
+    
+    public static function canView(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'view.HospitalUnit') : false;
+    }
+    
+    public static function canViewAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'list.HospitalUnit') : false;
     }
 }

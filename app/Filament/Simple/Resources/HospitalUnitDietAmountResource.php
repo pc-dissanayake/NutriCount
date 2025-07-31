@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class HospitalUnitDietAmountResource extends Resource
 
@@ -86,7 +88,30 @@ class HospitalUnitDietAmountResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->modalHeading('Diet Amount Details')
+                    ->modalWidth('2xl')
+                    ->infolist([
+                        \Filament\Infolists\Components\Section::make('Diet Amount Information')
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('date')
+                                    ->label('Date')
+                                    ->date(),
+                                \Filament\Infolists\Components\TextEntry::make('hospitalUnit.name')
+                                    ->label('Hospital Unit'),
+                                \Filament\Infolists\Components\TextEntry::make('simpleDiet.DietName_en')
+                                    ->label('Simple Diet'),
+                                \Filament\Infolists\Components\TextEntry::make('patient.full_name')
+                                    ->label('Patient')
+                                    ->formatStateUsing(fn ($state, $record) => 
+                                        is_null($record->patient_id) ? 'Ward Cumulative' : ($state ?: 'No Patient')
+                                    ),
+                                \Filament\Infolists\Components\TextEntry::make('amount')
+                                    ->label('Amount')
+                                    ->formatStateUsing(fn ($state) => $state ?? 'Not specified'),
+                            ])
+                            ->columns(2),
+                    ]),
                 // No edit or delete actions
             ])
             ->bulkActions([
@@ -106,7 +131,44 @@ class HospitalUnitDietAmountResource extends Resource
     {
         return [
             'index' => Pages\ListHospitalUnitDietAmounts::route('/'),
-            'view' => Pages\ViewHospitalUnitDietAmount::route('/{record}'),
         ];
     }
+
+    public static function canCreate(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'create.HospitalUnitDietAmount_Simple-Panel') : false;
+    }
+    
+    public static function canEdit(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'edit.HospitalUnitDietAmount_Simple-Panel') : false;
+    }
+    
+    public static function canDelete(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.HospitalUnitDietAmount_Simple-Panel') : false;
+    }
+    
+    public static function canDeleteAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.HospitalUnitDietAmount_Simple-Panel') : false;
+    }
+    
+    public static function canView(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'view.HospitalUnitDietAmount_Simple-Panel') : false;
+    }
+    
+    public static function canViewAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'list.HospitalUnitDietAmount_Simple-Panel') : false;
+    }
+
+    
 }

@@ -37,8 +37,26 @@ th.rotate > div > span {
         <span class="mx-2">&gt;</span>
         @php
             $isDisabled = false;
-            if (request()->has('year') || request()->has('month')) {
-            $isDisabled = true;
+            $hasDate = request()->has('date');
+            $hasMonth = request()->has('month');
+            $hasYear = request()->has('year');
+            $canExport = false;
+            $canView = false;
+            
+            // Check permissions based on what data is being viewed
+            if ($hasDate) {
+                $canExport = Auth::user() && userHasPermission(Auth::user(), 'export.daily_diet_analysis_calender_simple-panel');
+                $canView = Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel');
+            } elseif ($hasMonth) {
+                $canExport = Auth::user() && userHasPermission(Auth::user(), 'export.monthly_diet_analysis_calender_simple-panel');
+                $canView = Auth::user() && userHasPermission(Auth::user(), 'view.monthly_diet_analysis_calender_simple-panel');
+            } elseif ($hasYear) {
+                $canExport = Auth::user() && userHasPermission(Auth::user(), 'export.yearly_diet_analysis_calender_simple-panel');
+                $canView = Auth::user() && userHasPermission(Auth::user(), 'view.yearly_diet_analysis_calender_simple-panel');
+            }
+            
+            if ($hasYear || $hasMonth) {
+                $isDisabled = true;
             }
         @endphp
         @if ($isDisabled)
@@ -50,10 +68,12 @@ th.rotate > div > span {
         <span class="text-gray-500 dark:text-gray-400">NHSL Total Diet</span>
     </nav>
 
+    @if($canView && $canExport)
     <div style="text-align: right; margin-bottom: 10px;">
         <!-- <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Print</button> -->
         <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #328035ff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">Print </button>
     </div>
+    @endif
 
     <div id="print-area" style="background: #fff; padding: 2%;">
     <br />    <br />   
@@ -148,6 +168,7 @@ th.rotate > div > span {
 
     </div>
 
+    @if($canView && $canExport)
     <script>
         function printContent(id) {
             const printArea = document.getElementById(id).innerHTML;
@@ -200,6 +221,85 @@ th.rotate > div > span {
             });
         }
     </script>
+    @endif
+
+    @if(!$canView)
+    <style>
+        body {
+            pointer-events: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+        * {
+            pointer-events: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+    </style>
+    <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable text selection
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable drag and drop
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P, Ctrl+C
+            if (e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+                (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 65 || e.keyCode === 80 || e.keyCode === 67))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable all click events
+        document.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }, true);
+
+        // Show access denied message
+        document.addEventListener('DOMContentLoaded', function() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 24px;
+                z-index: 9999;
+                pointer-events: all !important;
+            `;
+            overlay.innerHTML = '<div>Access Denied - You do not have permission to view this content</div>';
+            document.body.appendChild(overlay);
+        });
+    </script>
+    @endif
 
 
 </x-filament-panels::page>

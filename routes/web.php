@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\UnitDietEntryController;
 use App\Http\Controllers\WelcomeController;
-use App\Http\Middleware\CheckUserActive;
 
     Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -12,9 +11,7 @@ use App\Http\Middleware\CheckUserActive;
 
 
 
-    Route::middleware(['auth'
-    //,'CheckUserActive'
-    ])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::redirect('settings', 'settings/profile');
 
         Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

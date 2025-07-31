@@ -28,6 +28,8 @@ class User extends Authenticatable
         'password',
         'role',
         'active',
+        'default_lang',
+        'units_assigned'
     ];
 
     /**
@@ -51,6 +53,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'active' => 'boolean',
+            'units_assigned' => 'array',
         ];
     }
 

@@ -12,7 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 
 class SimpleDietResource extends Resource
 {
@@ -131,7 +133,9 @@ class SimpleDietResource extends Resource
                 Tables\Columns\TextColumn::make('DietName_en')->label('Diet Name (English)')->searchable(),
                 Tables\Columns\TextColumn::make('DietName_si')->label('Diet Name (Sinhala)')->searchable(),
                 Tables\Columns\TextColumn::make('DietName_tm')->label('Diet Name (Tamil)')->searchable(),
-                Tables\Columns\ToggleColumn::make('active')->label('Active'),
+                Tables\Columns\ToggleColumn::make('active')
+                    ->label('Active')
+                    ->disabled(fn () => !Auth::user()?->can('edit.SimpleDiet_Simple-Panel')),
                 
                 Tables\Columns\TextColumn::make('primary_amount_value')
                     ->label('Primary Amount Value')
@@ -174,5 +178,41 @@ class SimpleDietResource extends Resource
             'edit' => Pages\EditSimpleDiet::route('/{record}/edit'),
             'view' => Pages\ViewSimpleDiet::route('/{record}'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'create.SimpleDiet_Simple-Panel') : false;
+    }
+    
+    public static function canEdit(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'edit.SimpleDiet_Simple-Panel') : false;
+    }
+    
+    public static function canDelete(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.SimpleDiet_Simple-Panel') : false;
+    }
+    
+    public static function canDeleteAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.SimpleDiet_Simple-Panel') : false;
+    }
+    
+    public static function canView(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'view.SimpleDiet_Simple-Panel') : false;
+    }
+    
+    public static function canViewAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'list.SimpleDiet_Simple-Panel') : false;
     }
 }

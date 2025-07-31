@@ -11,6 +11,7 @@
         "blade-ui-kit/blade-heroicons": "^2.6",
         "codeat3/blade-coolicons": "^1.6",
         "codeat3/blade-fluentui-system-icons": "^1.34",
+        "devonab/filament-easy-footer": "^1.1",
         "filament/filament": "^3.3",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",

@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use App\Models\HospitalUnit;
 use App\Models\HospitalUnitDietAmount;
 use App\Models\SimpleDiet;
+use Illuminate\Support\Facades\Auth;
 
 class DietAnalysis extends Page
 {
@@ -26,16 +27,27 @@ class DietAnalysis extends Page
 
     public function mount(): void
     {
+        $user = Auth::user();
+        
         $date = request()->query('date');
         $month = request()->query('month');
         $year = request()->query('year');
 
+        // Check permissions based on what data is being requested
         if ($date) {
+            // Daily view - check daily permission
+            if (!$user || !userHasPermission($user, 'view.daily_diet_analysis_calender_simple-panel')) {
+                abort(403, 'Access denied. You do not have permission to view daily diet analysis.');
+            }
             $this->date = $date;
-        } elseif ($month) {
-            $this->date = $month;
-        } elseif ($year) {
-            $this->date = $year;
+        } elseif ($month || $year) {
+            // Monthly/yearly view - check monthly/yearly permissions
+            if (!$user || !(userHasPermission($user, 'view.monthly_diet_analysis_calender_simple-panel') || 
+                           userHasPermission($user, 'view.monthly_calender_simple-panel') ||
+                           userHasPermission($user, 'view.yearly_diet_analysis_calender_simple-panel'))) {
+                abort(403, 'Access denied. You do not have permission to view monthly/yearly diet analysis.');
+            }
+            $this->date = $month ?: $year;
         } else {
             throw new NotAcceptableHttpException('Date, month, or year parameter is required.');
         }
@@ -58,5 +70,19 @@ class DietAnalysis extends Page
         } else {
             $this->dietData = collect();
         }
+    }
+
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return false;
+        }
+
+        // Check if user has any of the required permissions
+        return userHasPermission($user, 'view.daily_diet_analysis_calender_simple-panel') ||
+               userHasPermission($user, 'view.monthly_diet_analysis_calender_simple-panel') ||
+               userHasPermission($user, 'view.monthly_calender_simple-panel') ||
+               userHasPermission($user, 'view.yearly_diet_analysis_calender_simple-panel');
     }
 }

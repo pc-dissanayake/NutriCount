@@ -21,21 +21,20 @@
         </div>
     </nav>
 
-    @if (env('INDIVIDUAL_PATIENTS_ENTRY', true))
-<a 
-    href="{{ url('/simple/paient-individual-diet') . '?date=' . urlencode($date) . '&unit_id=' . urlencode(request('unit_id')) }}" 
+    @if(Auth::user() && userHasPermission(Auth::user(), 'add_individual_diet_data.Patient'))
+   <a href="{{ url('/simple/paient-individual-diet') . '?date=' . urlencode($date) . '&unit_id=' . urlencode(request('unit_id')) }}" 
     class="filament-button filament-button-primary text-white hover:bg-primary-600 focus:ring-primary-500 mt-8 px-4 py-2 rounded-xl"
     style="background-color: #0d6efd; border-color: #0d6efd;"
 >
     @if(request('Language') === 'Sin')
-        ආහාරවිවට දත්ත ඇතුළත් කිරීම
+        තනි රෝගියාගේ ආහාර දත්ත ඇතුලත් කිරීම
     @elseif(request('Language') === 'Tam')
         தனிப்பட்ட நோயாளி உணவு தரவு உள்ளீடு
     @else
         Individual Patient Diet Data Entry
     @endif
 </a>
-   @endif 
+@endif
     <!-- Existing Content -->
     @if ($date && request('unit_id'))
         <div class="mt-4 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl" >
@@ -74,9 +73,14 @@
             <button 
                 type="button" 
                 id="show-form" 
-                class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 mt-8 px-4 py-2 rounded-xl"
-            >
-                Edit
+                class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 mt-8 px-4 py-2 rounded-xl">
+                @if(request('Language') === 'Sin')
+                    සංස්කරණය
+                @elseif(request('Language') === 'Tam')
+                    திருத்து
+                @else
+                    Edit
+                @endif
             </button>
             
         </div>
@@ -87,14 +91,38 @@
     <form method="GET" action="{{ url('/simple/unit-diet-entry') }}" class="space-y-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow">
         <div class="flex items-center gap-4 ">
             <div class="flex flex-col">
-                <label for="date" class="font-semibold mb-1 text-gray-900 dark:text-gray-100">Date:</label>
+                <label for="date" class="font-semibold mb-1 text-gray-900 dark:text-gray-100">
+                    @if(request('Language') === 'Sin')
+                        දිනය
+                    @elseif(request('Language') === 'Tam')
+                        தேதி
+                    @else
+                        Date
+                    @endif
+                </label>
                 <input type="date" id="date" name="date" value="{{ $date ?? '' }}" class="border rounded-xl px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" required>
             </div>
 
             <div class="flex flex-col">
-                <label for="unit_id" class="font-semibold mb-1 text-gray-900 dark:text-gray-100">Unit:</label>
+                <label for="unit_id" class="font-semibold mb-1 text-gray-900 dark:text-gray-100">
+                    @if(request('Language') === 'Sin')
+                        ඒකකය
+                    @elseif(request('Language') === 'Tam')
+                        பிரிவு
+                    @else
+                        Unit
+                    @endif
+                </label>
                 <select id="unit_id" name="unit_id" class="border rounded-xl px-3 py-2 w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" required>
-                    <option value="" disabled selected>Select a unit</option>
+                    <option value="" disabled selected>
+                        @if(request('Language') === 'Sin')
+                            ඒකය තෝරන්න
+                        @elseif(request('Language') === 'Tam')
+                            பிரிவை தேர்ந்தெடுக்கவும்
+                        @else
+                            Select a unit
+                        @endif
+                    </option>
                     @foreach ($units as $unit)
                         <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
                     @endforeach

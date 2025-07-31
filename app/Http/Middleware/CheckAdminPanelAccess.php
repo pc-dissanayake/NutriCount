@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -6,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckUserActive
+class CheckAdminPanelAccess
 {
     /**
      * Handle an incoming request.
@@ -16,10 +17,10 @@ class CheckUserActive
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-
-        // Check if user is active
-        if (!$user->active) {
-            abort(403, 'Access denied. Your account is inactive.');
+        
+        // Check if user has panel_access.admin permission
+        if (!$user || !userHasPermission($user, 'panel_access.admin')) {
+            abort(403, 'Access denied. You do not have permission to access the admin panel.');
         }
 
         return $next($request);

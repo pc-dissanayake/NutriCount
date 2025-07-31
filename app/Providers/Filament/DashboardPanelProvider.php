@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Dashboard\Pages\Dashboard;
+use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -54,12 +55,18 @@ class DashboardPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                                CheckUserActive::class,
 
                 //'verified',
             ])
+            ->plugins([
+    EasyFooterPlugin::make()
+    ->withSentence(config('app.hospital_name') . " : Health Information and Management Unit")
+    ->withLoadTime()->withBorder(),
+])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\CheckUserActive::class,
+               // \App\Http\Middleware\CheckAdminPanelAccess::class,
             ]);
     }
 }
