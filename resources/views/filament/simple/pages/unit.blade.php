@@ -1,10 +1,23 @@
 <x-filament-panels::page>
 
     <!-- Breadcrumb System -->
-    <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
+    <nav class="flex items-center justify-between text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
+        <div class="flex items-center">
         <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
         <span class="mx-2">&gt;</span>
         <span class="text-gray-500 dark:text-gray-400">{{ urlencode(request('date')) ?? 'No Date Selected' }}</span>
+    </div>
+        <div class="flex gap-2">
+            @if(request('Language') !== 'Eng' && request('Language') !== null)
+                <a href="{{ url()->current() . '?' . http_build_query(array_merge(request()->except('Language'), ['Language' => 'Eng'])) }}" class="filament-button filament-button-primary px-3 py-1 rounded-xl" style="background-color: #8D153A; color: #fff; border-color: #8D153A;">English</a>
+            @endif
+            @if(request('Language') !== 'Sin')
+                <a href="{{ url()->current() . '?' . http_build_query(array_merge(request()->except('Language'), ['Language' => 'Sin'])) }}" class="filament-button filament-button-primary px-3 py-1 rounded-xl" style="background-color: #FFBE29; color: #000; border-color: #FFBE29;">සිංහල</a>
+            @endif
+            @if(request('Language') !== 'Tam')
+            <a href="{{ url()->current() . '?' . http_build_query(array_merge(request()->except('Language'), ['Language' => 'Tam'])) }}" class="filament-button filament-button-primary px-3 py-1 rounded-xl" style="background-color: #00534E; color: #fff; border-color: #00534E;">தமிழ்</a>
+            @endif
+        </div>
     </nav>
     <div class="bg-gray-200 dark:bg-gray-900 p-6 sm:p-10 md:p-16 mt-20 rounded-xl">
         <div class="container mx-auto">

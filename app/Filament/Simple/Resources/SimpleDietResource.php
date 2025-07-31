@@ -144,7 +144,8 @@ class SimpleDietResource extends Resource
                 Tables\Columns\TextColumn::make('list_order')->label('List Order')->sortable(),
             ])
                         ->defaultSort('list_order')
-            ->paginationPageOptions([25, 50, 100])
+              ->paginated([ 25, 50, 100, 'all'])
+               ->defaultPaginationPageOption(25)
             ->filters([
                 //
             ])

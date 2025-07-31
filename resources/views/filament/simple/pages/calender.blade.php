@@ -59,7 +59,7 @@
                     $bgColor = '';
                     if ($isToday) {
                         // Today (with or without data)
-                        $bgColor = 'background-color: #00FFE5; color: #000; border: 3px solid #000;'; // cyan, black text, teal border
+                        $bgColor = 'background-color: #FF3C00; color: #000; border: 3px solid #000;'; // cyan, black text, teal border
                     } elseif ($isFutureDate) {
                         // Future (with or without data)
                             $bgColor = 'background-color: #DDDDD9; color: #fff;'; // dark orange, white text
@@ -81,6 +81,29 @@
                 </div>
             @endforeach
         </div>
+        
+        <!-- Calendar Legend -->
+        <div class="mt-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Calendar Legend</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded" style="background-color: #FF3C00; border: 2px solid #000;"></div>
+                    <span class="text-gray-700 dark:text-gray-300">Today</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded" style="background-color: #20E680;"></div>
+                    <span class="text-gray-700 dark:text-gray-300">Past - Has Data</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded" style="background-color: #E6E31E;"></div>
+                    <span class="text-gray-700 dark:text-gray-300">Past - No Data available</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded" style="background-color: #DDDDD9;"></div>
+                    <span class="text-gray-700 dark:text-gray-300">Future Dates</span>
+                </div>
+            </div>
+        </div>
         <br />
          <div class="flex items-center justify-between mb-4">
             <a href="?month={{ $prevMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700">&larr; Prev</a>
@@ -95,8 +118,8 @@
                 <div class="mb-4">
                     <a href="{{ url('/simple/diet-analysis') . '?month=' . urlencode($currentMonth->format('Y-m')) }}"
                         class="fi-btn fi-btn-primary h-full rounded-md p-3 sm:rounded-xl sm:p-4"
-                        style="background-color: #14b8a6; color: white; border: 1px solid #0d9488;">
-                        Go to Total Diet Analysis of National Hospital of Sri Lanka for month {{ $currentMonth->format('F Y') ?? 'No Month Selected' }}
+                        style="background-color: #0019FF; color: white; border: 1px solid #0d9488;">
+                        Go to Total Diet Analysis of {{ env('HOSPITAL_NAME') }} for the month {{ $currentMonth->format('F Y') ?? 'No Month Selected' }}
                     </a>
                 </div>
                 <br />
@@ -104,8 +127,8 @@
                 <div>
                     <a href="{{ url('/simple/diet-analysis') . '?year=' . urlencode($currentMonth->format('Y')) }}"
                         class="fi-btn fi-btn-primary h-full rounded-md p-3 sm:rounded-xl sm:p-4"
-                        style="background-color: #14b8a6; color: white; border: 1px solid #0d9488;">
-                        Go to Total Diet Analysis of National Hospital of Sri Lanka for year {{ $currentMonth->format('Y') ?? 'No Year Selected' }}
+                        style="background-color: #0019FF; color: white; border: 1px solid #0d9488;">
+                        Go to Total Diet Analysis of {{ env('HOSPITAL_NAME') }} for the year {{ $currentMonth->format('Y') ?? 'No Year Selected' }}
                     </a>
                 </div>
             </div>

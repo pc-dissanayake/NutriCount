@@ -9,6 +9,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
         body {
             font-family: 'Figtree', sans-serif;
@@ -36,23 +37,27 @@
                         <span class="text-2xl font-bold text-green-600">NutriCount</span>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="/dashboard" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="dashboard" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Simple Diet Management
                         </a>
                         {{-- <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Patients @svg('bxl-dev-to')
                         </a> --}}
-                        <a href="/simple/simple-diets" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="simple/simple-diets" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Diets
                         </a>
-                        <a href="/simple/calender" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="simple/calender" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Reports
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center">
                         <div>
-                                <a href="{{ url('/pin-login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Login</a>
+                                @if (env('PIN_LOGIN', true))
+                                    <a href="{{ url('/pin-login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Login</a>
+                                @else
+                                    <a href="{{ url('/dashboard/dashboard') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Login</a>
+                                @endif
                                 {{-- <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-900">Log in</a> --}}
                 
                                     {{-- <a href="{{ route(name: 'register') }}" class="ml-4 text-indigo-600 hover:text-indigo-900">Register</a> --}}

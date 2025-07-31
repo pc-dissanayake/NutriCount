@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 
 class SimpleDiet extends Model
 {
-    use HasFactory;
+    use HasFactory , LogsActivity;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -33,4 +36,13 @@ class SimpleDiet extends Model
             }
         });
     }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
 }

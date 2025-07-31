@@ -5,13 +5,16 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use App\Helpers\PermissionHelper;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -20,13 +23,42 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-s-users';
     protected static ?string $navigationGroup = 'User Management';
 
-
-
-
-    public static function shouldRegisterNavigation(): bool
+    public static function canCreate(): bool
     {
-        return auth()->user()?->role === 'admin';
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'create.user') : false;
     }
+    
+    public static function canEdit(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'edit.user') : false;
+    }
+    
+    public static function canDelete(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.user') : false;
+    }
+    
+    public static function canDeleteAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'delete.user') : false;
+    }
+    
+    public static function canView(Model $record): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'view.user') : false;
+    }
+    
+    public static function canViewAny(): bool
+    {
+        $user = Auth::user();
+        return $user ? userHasPermission($user, 'list.user') : false;
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -36,9 +68,21 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('email')->email()->required(),
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
-                    ->required(fn ($context) => $context === 'create'),
-                Forms\Components\TextInput::make('role')->required(),
+                    ->dehydrateStateUsing(fn ($state) => $state ? bcrypt($state) : null)
+                    ->required(fn ($context) => $context === 'create')
+                    ->visible(fn ($context) => $context === 'create'),
+                Forms\Components\Select::make('role')
+                    ->options([
+                        //'Admin' => 'Admin',
+                        'Level1' => config('app.level_names.level1'),
+                        'Level2' => config('app.level_names.level2'),
+                        'Level3' => config('app.level_names.level3'),
+                        'User' => 'User',
+                        'Guest' => 'Guest',
+                        'Api only' => 'Api only',
+                    ])
+                    ->default('Guest')
+                    ->required(),
                 Forms\Components\Toggle::make('active')->label('Active'),
             ]);
     }

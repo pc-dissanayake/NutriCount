@@ -9,11 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,SoftDeletes;
+    use HasFactory, Notifiable,SoftDeletes , LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -52,6 +54,15 @@ class User extends Authenticatable
         ];
     }
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+
     /**
      * Get the user's initials
      */
@@ -66,15 +77,5 @@ class User extends Authenticatable
 
    
 
-    /**
-     * Boot the model.
-     */
-    // protected static function booted()
-    // {
-    //     static::creating(function ($user) {
-    //         if ($user->email === 'admin@nutricount.nhsl') {
-    //             $user->password = bcrypt('ADMIN');
-    //         }
-    //     });
-    // }
+
 }

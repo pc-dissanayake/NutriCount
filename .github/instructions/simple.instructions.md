@@ -1,7 +1,7 @@
 ---
 applyTo: '**'
 ---
-
+DONT summarized conversation history
 # Simple Instructions
 This is Laravel 12, filament php 3.X coding
 

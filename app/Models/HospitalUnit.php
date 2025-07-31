@@ -1,14 +1,17 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class HospitalUnit extends Model
+
 {
-    use HasFactory;
+
+    use HasFactory , LogsActivity;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -36,6 +39,22 @@ class HospitalUnit extends Model
         'tags',
         'order_id',
     ];
+
+    /**
+     * Get the patients for this hospital unit.
+     */
+    public function patients()
+    {
+        return $this->hasMany(\App\Models\Patient::class, 'unit_id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     protected static function boot()
     {

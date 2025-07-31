@@ -122,5 +122,20 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | User Level Names
+    |--------------------------------------------------------------------------
+    |
+    | These values define the names for different user levels in the application.
+    | You can customize these names through your .env file.
+    |
+    */
+
+    'level_names' => [
+        'level1' => env('LEVEL_1_NAME', 'Level 1-'),
+        'level2' => env('LEVEL_2_NAME', 'Level 2-'),
+        'level3' => env('LEVEL_3_NAME', 'Level 3-'),
+    ],
 
 ];

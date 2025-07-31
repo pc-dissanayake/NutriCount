@@ -15,11 +15,19 @@ Route::middleware('guest')->group(function () {
     Volt::route('reset-password/{token}', 'auth.reset-password')
         ->name('password.reset');
 
-    Volt::route('pin-login', 'auth.pin-login')
-        ->name('pin-login');
+    if (env('PIN_LOGIN' )) {
+        Volt::route('pin-login', 'auth.pin-login')
+            ->name('pin-login');
+    } else {
+        Route::get('pin-login', function () {
+            return redirect('/dashboard/dashboard')->name('pin-login');
+        });
+    }
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'
+//,'CheckUserActive'
+])->group(function () {
     Volt::route('verify-email', 'auth.verify-email')
         ->name('verification.notice');
 

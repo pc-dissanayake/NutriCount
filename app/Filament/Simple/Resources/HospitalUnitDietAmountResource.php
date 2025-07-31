@@ -21,13 +21,11 @@ class HospitalUnitDietAmountResource extends Resource
     protected static ?string $navigationIcon = 'healthicons-o-clinical-f';
 
     protected static ?string $navigationGroup = 'Diet Amounts';
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationLabel = 'List of Hospital Unit Diet Amounts';
 
-    public static function canCreate(): bool
-    {
-        return false;
-    }
+
 
     public static function form(Form $form): Form
     {
@@ -36,24 +34,31 @@ class HospitalUnitDietAmountResource extends Resource
                 Forms\Components\DatePicker::make('date')
                     ->label('Date')
                     ->required()
-                    ->disabled(fn ($record) => filled($record)),
+                    ->disabled(),
                 Forms\Components\Select::make('hospital_unit_id')
                     ->label('Hospital Unit')
                     ->relationship('hospitalUnit', 'name')
                     ->required()
-                    ->disabled(fn ($record) => filled($record)),
+                    ->disabled(),
                 Forms\Components\Select::make('simple_diet_id')
                     ->label('Simple Diet')
                     ->relationship('simpleDiet', 'DietName_en')
-                    ->required(),
+                    ->required()
+                    ->disabled(),
                 Forms\Components\Select::make('patient_id')
                     ->label('Patient')
                     ->relationship('patient', 'full_name')
-                    ->nullable(),
+                    ->nullable()
+                    ->default(null)
+                    ->options([
+                        null => 'Ward Cumulative',
+                    ])
+                    ->disabled(),
                 Forms\Components\TextInput::make('amount')
                     ->label('Amount')
                     ->numeric()
-                    ->nullable(),
+                    ->nullable()
+                    ->disabled(),
             ]);
     }
 
@@ -72,7 +77,8 @@ class HospitalUnitDietAmountResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('patient.full_name')
                     ->label('Patient')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn ($state, $record) => is_null($record->patient_id) ? 'Ward Cumalative' : ($state ?: '')),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount'),
             ])
@@ -81,6 +87,7 @@ class HospitalUnitDietAmountResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                // No edit or delete actions
             ])
             ->bulkActions([
                 // No bulk delete or edit actions

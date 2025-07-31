@@ -3,9 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 
 class NutritionOrder extends Model
 {
+    use LogsActivity;
+
+
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -27,6 +33,15 @@ class NutritionOrder extends Model
         'enteral_formula' => 'array',
         'date_time' => 'datetime',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
 
     protected static function boot()
     {

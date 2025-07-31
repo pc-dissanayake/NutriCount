@@ -51,8 +51,8 @@ th.rotate > div > span {
     </nav>
 
     <div style="text-align: right; margin-bottom: 10px;">
-        <button onclick="printContent('print-area')" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Print</button>
-        <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">Print as Image</button>
+        <!-- <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Print</button> -->
+        <button onclick="downloadImage('print-area')" style="padding: 8px 16px; background-color: #328035ff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">Print </button>
     </div>
 
     <div id="print-area" style="background: #fff; padding: 2%;">

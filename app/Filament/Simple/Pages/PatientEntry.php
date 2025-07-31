@@ -7,11 +7,15 @@ use App\Models\SimpleDiet;
 use App\Models\HospitalUnitDietAmount;
 use Filament\Pages\Page;
 
-class UnitDietEntry extends Page
+class PatientEntry extends Page
 {
     protected static ?string $navigationIcon = 'fluentui-food-24';
 
-    protected static string $view = 'filament.simple.pages.unit-diet-entry';
+    protected static string $view = 'filament.simple.pages.patient-entry';
+
+    protected static ?string $navigationGroup = 'Patients';
+
+    protected static ?string $navigationLabel = 'Individual Diet Entry';
 
     public $date;
 
@@ -30,18 +34,15 @@ class UnitDietEntry extends Page
             $this->date = null;
             $unitId = null;
         } else {
-            $this->simpleDiets = SimpleDiet::where('active', true)
-                ->orderBy('list_order')
-                ->get()
-                ->map(function ($diet) use ($unitId) {
-                    $savedAmount = HospitalUnitDietAmount::where('hospital_unit_id', $unitId)
-                        ->where('simple_diet_id', $diet->id)
-                        ->where('date', $this->date)
-                        ->value('amount');
+            $this->simpleDiets = SimpleDiet::orderBy('list_order')->get()->map(function ($diet) use ($unitId) {
+                $savedAmount = HospitalUnitDietAmount::where('hospital_unit_id', $unitId)
+                    ->where('simple_diet_id', $diet->id)
+                    ->where('date', $this->date)
+                    ->value('amount');
 
-                    $diet->saved_amount = $savedAmount ?? null;
-                    return $diet;
-                });
+                $diet->saved_amount = $savedAmount ?? null;
+                return $diet;
+            });
         }
     }
 
@@ -57,9 +58,5 @@ class UnitDietEntry extends Page
                 ['amount' => $amount]
             );
         }
-        \Filament\Notifications\Notification::make()
-            ->title('Diet amounts saved successfully!')
-            ->success()
-            ->send();
     }
 }

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class RolePermission extends Model
 {
-    use HasFactory;
+    use HasFactory , LogsActivity;
 
     protected $table = 'role_permissions';
     public $timestamps = false;
@@ -26,4 +28,13 @@ class RolePermission extends Model
         'guest' => 'boolean',
         'api_only' => 'boolean',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
 }

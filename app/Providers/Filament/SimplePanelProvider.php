@@ -37,6 +37,8 @@ class SimplePanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Simple/Pages'), for: 'App\\Filament\\Simple\\Pages')
             ->pages([
                 Calender::class,
+                \App\Filament\Simple\Pages\UnitDietEntry::class,
+                \App\Filament\Simple\Pages\PatientEntry::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Simple/Widgets'), for: 'App\\Filament\\Simple\\Widgets')
             ->widgets([
@@ -53,9 +55,12 @@ class SimplePanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                                CheckUserActive::class,
+
             ])
             ->resources([
                 \App\Filament\Resources\HospitalUnitResource::class, // Link to HospitalUnitResource
+                \App\Filament\Resources\PatientResource::class, // Link to PatientResource
             ])
             ->authMiddleware([
                 Authenticate::class,

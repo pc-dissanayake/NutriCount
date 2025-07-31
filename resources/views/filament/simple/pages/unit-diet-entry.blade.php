@@ -1,20 +1,76 @@
 <x-filament-panels::page>
     <!-- Breadcrumb System -->
-    <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
-        <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
-        <span class="mx-2">&gt;</span>
-        <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
-        <span class="mx-2">&gt;</span>
-        <span class="text-gray-500 dark:text-gray-400">{{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</span>
+    <nav class="flex items-center justify-between text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
+        <div class="flex items-center">
+            <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
+            <span class="mx-2">&gt;</span>
+            <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
+            <span class="mx-2">&gt;</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</span>
+        </div>
+        <div class="flex gap-2">
+            @if(request('Language') !== 'Eng' && request('Language') !== null)
+                <a href="{{ url()->current() . '?' . http_build_query(array_merge(request()->except('Language'), ['Language' => 'Eng'])) }}" class="filament-button filament-button-primary px-3 py-1 rounded-xl" style="background-color: #8D153A; color: #fff; border-color: #8D153A;">English</a>
+            @endif
+            @if(request('Language') !== 'Sin')
+                <a href="{{ url()->current() . '?' . http_build_query(array_merge(request()->except('Language'), ['Language' => 'Sin'])) }}" class="filament-button filament-button-primary px-3 py-1 rounded-xl" style="background-color: #FFBE29; color: #000; border-color: #FFBE29;">සිංහල</a>
+            @endif
+            @if(request('Language') !== 'Tam')
+            <a href="{{ url()->current() . '?' . http_build_query(array_merge(request()->except('Language'), ['Language' => 'Tam'])) }}" class="filament-button filament-button-primary px-3 py-1 rounded-xl" style="background-color: #00534E; color: #fff; border-color: #00534E;">தமிழ்</a>
+            @endif
+        </div>
     </nav>
 
+    @if (env('INDIVIDUAL_PATIENTS_ENTRY', true))
+<a 
+    href="{{ url('/simple/paient-individual-diet') . '?date=' . urlencode($date) . '&unit_id=' . urlencode(request('unit_id')) }}" 
+    class="filament-button filament-button-primary text-white hover:bg-primary-600 focus:ring-primary-500 mt-8 px-4 py-2 rounded-xl"
+    style="background-color: #0d6efd; border-color: #0d6efd;"
+>
+    @if(request('Language') === 'Sin')
+        ආහාරවිවට දත්ත ඇතුළත් කිරීම
+    @elseif(request('Language') === 'Tam')
+        தனிப்பட்ட நோயாளி உணவு தரவு உள்ளீடு
+    @else
+        Individual Patient Diet Data Entry
+    @endif
+</a>
+   @endif 
     <!-- Existing Content -->
     @if ($date && request('unit_id'))
         <div class="mt-4 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl" >
-            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Selected Date and Unit</h2>
-            <p class="text-gray-700 dark:text-gray-500"><strong>Date:</strong> {{ $date }}</p>
-            <p class="text-gray-700 dark:text-gray-500"><strong>Unit:</strong> {{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</p><p>&nbsp;</p>
-        
+            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+                @if(request('Language') === 'Sin')
+                    තෝරාගත් දිනය සහ ඒකකය
+                @elseif(request('Language') === 'Tam')
+                    தேர்ந்தெடுக்கப்பட்ட தேதி மற்றும் பிரிவு
+                @else
+                    Selected Date and Unit
+                @endif
+            </h2>
+            <p class="text-gray-700 dark:text-gray-500">
+                <strong>
+                    @if(request('Language') === 'Sin')
+                        දිනය
+                    @elseif(request('Language') === 'Tam')
+                        தேதி
+                    @else
+                        Date
+                    @endif
+                :</strong> {{ $date }}
+            </p>
+            <p class="text-gray-700 dark:text-gray-500">
+                <strong>
+                    @if(request('Language') === 'Sin')
+                        ඒකකය
+                    @elseif(request('Language') === 'Tam')
+                        பிரிவு
+                    @else
+                        Unit
+                    @endif
+                :</strong> {{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}
+            </p>
+            <p>&nbsp;</p>
             <button 
                 type="button" 
                 id="show-form" 
@@ -22,6 +78,7 @@
             >
                 Edit
             </button>
+            
         </div>
         <div id="form-container" class="hidden">
     @endif
@@ -63,8 +120,24 @@
                 <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-600">
                     <thead>
                         <tr>
-                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">Diet Name</th>
-                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">Amount</th>
+                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-red-900 dark:text-red-100">
+                                @if(request('Language') === 'Sin')
+                                    ආහාර නාමය
+                                @elseif(request('Language') === 'Tam')
+                                    உணவு பெயர்
+                                @else
+                                    Diet Name
+                                @endif
+                            </th>
+                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">
+                                @if(request('Language') === 'Sin')
+                                    ප්‍රමාණය
+                                @elseif(request('Language') === 'Tam')
+                                    அளவு
+                                @else
+                                    Amount
+                                @endif
+                            </th>
                             <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100"></th>
                             <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100"></th>
                         </tr>
@@ -85,7 +158,15 @@
                         @endphp
                         @foreach ($simpleDiets as $diet)
                             <tr>
-                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">{{ $diet->DietName_en }}</td>
+                                <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">
+                                    @if(request('Language') === 'Sin')
+                                        {{ $diet->DietName_si }}
+                                    @elseif(request('Language') === 'Tam')
+                                        {{ $diet->DietName_tm }}
+                                    @else
+                                        {{ $diet->DietName_en }}
+                                    @endif
+                                </td>
                                 <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
                                     <input type="number" step="{{ $unitSteps[$diet->primary_amount_unit] ?? '0.001' }}" name="dietAmounts[{{ $diet->id }}]" class="border rounded-xl px-3 py-2 w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" value="{{ $diet->saved_amount ?? '' }}">
                                 </td>
@@ -104,7 +185,24 @@
                     </tbody>
                 </table>
                 <div class="flex items-center gap-2">
-                    <button type="submit" class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 px-4 py-2">Save Diet Amounts</button>
+                    <button type="submit" class="filament-button filament-button-primary bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 px-4 py-2">
+                        @if(request('Language') === 'Sin')
+                            සුරකින්න
+                        @elseif(request('Language') === 'Tam')
+                            சேமிக்கவும்
+                        @else
+                            Save Diet Amounts
+                        @endif
+                    </button>
+                    <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="filament-button filament-button-primary bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500 px-4 py-2" style="background-color: #6b7280; border-color: #6b7280; color: #fff;">
+                        @if(request('Language') === 'Sin')
+                            ආපසු
+                        @elseif(request('Language') === 'Tam')
+                            பின்செல்
+                        @else
+                            Back
+                        @endif
+                    </a>
                 </div>
             </form>
         </div>

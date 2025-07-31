@@ -18,6 +18,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class RolePermissionResource extends Resource
 {
@@ -37,8 +39,8 @@ class RolePermissionResource extends Resource
                     ->columns(5)
                     ->schema([
                         Toggle::make('admin')->label('Admin Access')->default((true)),
-                        Toggle::make('level1')->label(env("LEVEL_1_NAME").' Access'),
-                        Toggle::make('level2')->label(env("LEVEL_2_NAME").' Access'),
+                        Toggle::make('level1')->label(config('app.level_names.level1').' Access'),
+                        Toggle::make('level2')->label(config('app.level_names.level2').' Access'),
                         Toggle::make('user')->label('User Access'),
                         Toggle::make('guest')->label('Guest Access'),
                         Toggle::make('api_only')->label('API Only Access'),
@@ -54,9 +56,9 @@ class RolePermissionResource extends Resource
             ->columns([
                 TextColumn::make('permission')->searchable(),
                 ToggleColumn::make('admin'),
-                ToggleColumn::make('level1')->label(env("LEVEL_1_NAME")),
-                ToggleColumn::make('level2')->label(env("LEVEL_2_NAME")),
-                ToggleColumn::make('level3')->label(env("LEVEL_3_NAME")),
+                ToggleColumn::make('level1')->label(config('app.level_names.level1')),
+                ToggleColumn::make('level2')->label(config('app.level_names.level2')),
+                ToggleColumn::make('level3')->label(config('app.level_names.level3')),
                 ToggleColumn::make('user'),
                 ToggleColumn::make('guest'),
                 ToggleColumn::make('api_only'),
@@ -89,4 +91,40 @@ class RolePermissionResource extends Resource
             'edit' => Pages\EditRolePermission::route('/{record}/edit'),
         ];
     }
+
+    // public static function canCreate(): bool
+    // {
+    //     $user = Auth::user();
+    //     return $user ? userHasPermission($user, 'create.role_permission') : false;
+    // }
+
+    // public static function canEdit(Model $record): bool
+    // {
+    //     $user = Auth::user();
+    //     return $user ? userHasPermission($user, 'edit.role_permission') : false;
+    // }
+
+    // public static function canDelete(Model $record): bool
+    // {
+    //     $user = Auth::user();
+    //     return $user ? userHasPermission($user, 'delete.role_permission') : false;
+    // }
+
+    // public static function canDeleteAny(): bool
+    // {
+    //     $user = Auth::user();
+    //     return $user ? userHasPermission($user, 'delete.role_permission') : false;
+    // }
+
+    // public static function canView(Model $record): bool
+    // {
+    //     $user = Auth::user();
+    //     return $user ? userHasPermission($user, 'view.role_permission') : false;
+    // }
+
+    // public static function canViewAny(): bool
+    // {
+    //     $user = Auth::user();
+    //     return $user ? userHasPermission($user, 'list.role_permission') : false;
+    // }
 }
