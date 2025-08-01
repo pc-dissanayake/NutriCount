@@ -133,7 +133,9 @@ th.rotate > div > span {
                         $amount = round($amount, $decimals);
                         $unitTotal += $amount;
                     @endphp
-                    <td style="border: 1px solid black; padding: 8px;">
+                    <td style="border: 1px solid black; padding: 8px;"
+                    dietType="{{ $dietType->id }}"
+                    >
                         {{ $amount }}
                     </td>
                 @endforeach
@@ -152,7 +154,9 @@ th.rotate > div > span {
                     $decimals = strpos($step, '.') !== false ? strlen(explode('.', (string)$step)[1]) : 0;
                     $columnTotal = round($columnTotal, $decimals);
                 @endphp
-                <td style="border: 1px solid black; padding: 8px; font-weight: bold;">
+                <td style="border: 1px solid black; padding: 8px; font-weight: bold;"
+                dietType="{{ $dietType->id }}" dietType-active="{{ $dietType->active ? 'true' : 'false' }}" class="total-row"
+                >
                     {{ $columnTotal }}
                 </td>
             @endforeach
@@ -220,6 +224,46 @@ th.rotate > div > span {
                 win.document.close();
             });
         }
+
+        // Remove inactive diet columns with zero totals after page load
+        function removeInactiveDietColumns() {
+            const totalRows = document.querySelectorAll('.total-row');
+            const columnsToRemove = [];
+
+            totalRows.forEach((cell, index) => {
+                const isInactive = cell.getAttribute('diettype-active') === 'false';
+                const totalValue = parseFloat(cell.textContent.trim()) || 0;
+                
+                if (isInactive && totalValue === 0) {
+                    columnsToRemove.push(index + 1); // +1 because first column is "Unit"
+                }
+            });
+
+            // Remove columns from all rows (headers and data)
+            columnsToRemove.reverse().forEach(columnIndex => {
+                const table = document.querySelector('table');
+                if (table) {
+                    // Remove header cell
+                    const headerRow = table.querySelector('thead tr');
+                    if (headerRow && headerRow.children[columnIndex]) {
+                        headerRow.children[columnIndex].remove();
+                    }
+                    
+                    // Remove data cells from all body rows
+                    const bodyRows = table.querySelectorAll('tbody tr');
+                    bodyRows.forEach(row => {
+                        if (row.children[columnIndex]) {
+                            row.children[columnIndex].remove();
+                        }
+                    });
+                }
+            });
+        }
+
+        // Execute after page load
+        document.addEventListener('DOMContentLoaded', function() {
+            removeInactiveDietColumns();
+        });
     </script>
     @endif
 

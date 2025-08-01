@@ -73,15 +73,24 @@ class UserResource extends Resource
                     ->required(fn ($context) => $context === 'create')
                     ->visible(fn ($context) => $context === 'create'),
                 Forms\Components\Select::make('role')
-                    ->options([
-                        //'Admin' => 'Admin',
-                        'Level1' => config('app.level_names.level1'),
-                        'Level2' => config('app.level_names.level2'),
-                        'Level3' => config('app.level_names.level3'),
-                        'User' => 'User',
-                        'Guest' => 'Guest',
-                        'Api only' => 'Api only',
-                    ])
+                    ->options(function () {
+                        $user = Auth::user();
+                        $options = [
+                            'level1' => config('app.level_names.level1'),
+                            'level2' => config('app.level_names.level2'),
+                            'level3' => config('app.level_names.level3'),
+                            'user' => 'user',
+                            'guest' => 'guest',
+                            'api_only' => 'Api only',
+                        ];
+                        
+                        // Only show Admin option if current user is Admin
+                        if ($user && $user->role === 'admin') {
+                            $options = ['admin' => 'Admin'] + $options;
+                        }
+                        
+                        return $options;
+                    })
                     ->default('Guest')
                     ->required(),
                 Forms\Components\Select::make('default_lang')
@@ -112,11 +121,17 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('units_assigned')
                     ->label('Units Assigned')
                     ->formatStateUsing(function ($state) {
-                        if (is_array($state) && count($state) > 0) {
+                        // Handle null, empty, or non-array values
+                        if (!$state || !is_array($state) || count($state) === 0) {
+                            return 'No units assigned';
+                        }
+                        
+                        try {
                             $units = \App\Models\HospitalUnit::whereIn('id', $state)->pluck('name')->toArray();
                             return implode(', ', $units);
+                        } catch (\Exception $e) {
+                            return 'Error loading units';
                         }
-                        return 'No units assigned';
                     }),
                 Tables\Columns\ToggleColumn::make('active'),
             ])

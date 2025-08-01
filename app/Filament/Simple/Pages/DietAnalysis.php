@@ -70,6 +70,8 @@ class DietAnalysis extends Page
         } else {
             $this->dietData = collect();
         }
+
+
     }
 
     public static function canAccess(): bool

@@ -17,9 +17,9 @@
             $currentDate = $currentMonth->format('Y-m-d');
         @endphp
         <div class="flex items-center justify-between mb-4">
-            <a href="?month={{ $prevMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700"></a>
+            <a href="?month={{ $prevMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700">&larr; Previous</a>
             <span class="text-xl font-bold">{{ $currentMonth->format('F Y') }}</span>
-            <a href="?month={{ $nextMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700"></a>
+            <a href="?month={{ $nextMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700">Next &rarr;</a>
         </div>
         {{-- <div class="mb-2 text-sm text-gray-700 dark:text-gray-300">
             Current Month: <span class="font-semibold">{{ $currentMonthName }}</span> |
@@ -106,9 +106,9 @@
         </div>
         <br />
          <div class="flex items-center justify-between mb-4">
-            <a href="?month={{ $prevMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700">&larr; Prev</a>
+            <a href="?month={{ $prevMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700">&larr; </a>
             <span class="text-xl font-bold"></span>
-            <a href="?month={{ $nextMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700">Next &rarr;</a>
+            <a href="?month={{ $nextMonth }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded hover:bg-gray-300 dark:hover:bg-gray-700"> &rarr;</a>
         </div>
         
         <!-- Diet Analysis Quick Links -->

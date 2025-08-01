@@ -7,6 +7,8 @@ use App\Filament\Resources\PatientResource\RelationManagers;
 use App\Models\Patient;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -522,6 +524,86 @@ class PatientResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            Infolists\Components\Section::make('Patient Identifiers')
+                ->schema([
+                    Infolists\Components\TextEntry::make('unit.name')
+                        ->label('Hospital Unit'),
+                    Infolists\Components\TextEntry::make('bht')
+                        ->label('BHT#'),
+                    Infolists\Components\TextEntry::make('phn')
+                        ->label('PHN#'),
+                    Infolists\Components\TextEntry::make('nic')
+                        ->label('NIC#'),
+                ])
+                ->columns(2),
+            
+            Infolists\Components\Section::make('Personal Information')
+                ->schema([
+                    Infolists\Components\TextEntry::make('name')
+                        ->label('Full Name'),
+                    Infolists\Components\TextEntry::make('gender')
+                        ->label('Gender')
+                        ->badge()
+                        ->color(fn (string $state): string => match ($state) {
+                            'male' => 'blue',
+                            'female' => 'pink',
+                            'other' => 'gray',
+                            default => 'gray',
+                        }),
+                    Infolists\Components\TextEntry::make('date_of_birth')
+                        ->label('Date of Birth')
+                        ->date(),
+                    Infolists\Components\TextEntry::make('civil_status')
+                        ->label('Civil Status'),
+                    Infolists\Components\TextEntry::make('ethnicity')
+                        ->label('Ethnicity'),
+                    Infolists\Components\TextEntry::make('religion')
+                        ->label('Religion'),
+                    Infolists\Components\TextEntry::make('blood_group')
+                        ->label('Blood Group')
+                        ->badge()
+                        ->color('red'),
+                    Infolists\Components\TextEntry::make('occupation')
+                        ->label('Occupation'),
+                ])
+                ->columns(2),
+
+            Infolists\Components\Section::make('Contact Information')
+                ->schema([
+                    Infolists\Components\TextEntry::make('contact_home')
+                        ->label('Home Phone'),
+                    Infolists\Components\TextEntry::make('contact_mobile')
+                        ->label('Mobile Phone'),
+                    Infolists\Components\TextEntry::make('address')
+                        ->label('Address')
+                        ->formatStateUsing(function ($state) {
+                            if ($state) {
+                                $address = json_decode($state, true);
+                                if (is_array($address) && !empty($address[0])) {
+                                    $addr = $address[0];
+                                    $parts = [];
+                                    if (!empty($addr['line'])) {
+                                        $parts = array_merge($parts, $addr['line']);
+                                    }
+                                    if (!empty($addr['city'])) $parts[] = $addr['city'];
+                                    if (!empty($addr['district'])) $parts[] = $addr['district'];
+                                    if (!empty($addr['state'])) $parts[] = $addr['state'];
+                                    if (!empty($addr['postalCode'])) $parts[] = $addr['postalCode'];
+                                    if (!empty($addr['country'])) $parts[] = $addr['country'];
+                                    return implode(', ', $parts);
+                                }
+                            }
+                            return 'No address recorded';
+                        })
+                        ->columnSpanFull(),
+                ])
+                ->columns(2),
+        ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -540,7 +622,7 @@ class PatientResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -561,6 +643,7 @@ class PatientResource extends Resource
         return [
             'index' => Pages\ListPatients::route('/'),
             'create' => Pages\CreatePatient::route('/create'),
+            'view' => Pages\ViewPatient::route('/{record}'),
             'edit' => Pages\EditPatient::route('/{record}/edit'),
         ];
     }

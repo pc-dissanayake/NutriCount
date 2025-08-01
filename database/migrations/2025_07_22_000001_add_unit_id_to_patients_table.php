@@ -8,16 +8,16 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('patients', function (Blueprint $table) {
-            $table->uuid('unit_id')->nullable()->after('id');
-            $table->foreign('unit_id')->references('id')->on('units')->onDelete('set null');
+           $table->uuid('unit_id')->nullable()->after('id');
+           $table->foreign('unit_id')->references('id')->on('units')->onDelete('set null');
         });
     }
 
     public function down(): void
     {
         Schema::table('patients', function (Blueprint $table) {
-            $table->dropForeign(['unit_id']);
-            $table->dropColumn('unit_id');
+           $table->dropForeign(['unit_id']);
+           $table->dropColumn('unit_id');
         });
     }
 };

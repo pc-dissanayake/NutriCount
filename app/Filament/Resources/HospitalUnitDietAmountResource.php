@@ -9,6 +9,8 @@ use App\Models\SimpleDiet;
 use App\Models\Patient;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -44,6 +46,27 @@ class HospitalUnitDietAmountResource extends Resource
         ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            Infolists\Components\Section::make('Diet Amount Details')
+                ->schema([
+                    Infolists\Components\TextEntry::make('hospitalUnit.unit_name')
+                        ->label('Hospital Unit'),
+                    Infolists\Components\TextEntry::make('simpleDiet.name')
+                        ->label('Diet'),
+                    Infolists\Components\TextEntry::make('patient.full_name')
+                        ->label('Patient'),
+                    Infolists\Components\TextEntry::make('date')
+                        ->label('Date')
+                        ->date(),
+                    Infolists\Components\TextEntry::make('amount')
+                        ->label('Amount'),
+                ])
+                ->columns(2)
+        ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table->columns([
@@ -54,6 +77,7 @@ class HospitalUnitDietAmountResource extends Resource
             Tables\Columns\TextColumn::make('amount'),
         ])
         ->actions([
+            Tables\Actions\ViewAction::make(),
             Tables\Actions\EditAction::make(),
         ])
         ->bulkActions([
@@ -66,6 +90,7 @@ class HospitalUnitDietAmountResource extends Resource
         return [
             'index' => Pages\ListHospitalUnitDietAmounts::route('/'),
             'create' => Pages\CreateHospitalUnitDietAmount::route('/create'),
+            'view' => Pages\ViewHospitalUnitDietAmount::route('/{record}'),
             'edit' => Pages\EditHospitalUnitDietAmount::route('/{record}/edit'),
         ];
     }
