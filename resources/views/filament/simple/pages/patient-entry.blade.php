@@ -3,7 +3,7 @@
     <nav class="text-sm  bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
         <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
         <span class="mx-2">&gt;</span>
-        <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
+        <a href="{{ url(path: '/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
         <span class="mx-2">&gt;</span>
         <span class="text-gray-500 dark:text-gray-400">{{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</span>
     </nav>

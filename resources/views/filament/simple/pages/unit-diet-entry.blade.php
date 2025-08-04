@@ -6,9 +6,6 @@
             <span class="mx-2">&gt;</span>
             <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
             <span class="mx-2">&gt;</span>
-            <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
-
-            <span class="mx-2">&gt;</span>
             <span class="text-gray-500 dark:text-gray-400">{{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</span>
         </div>
         <div class="flex gap-2">

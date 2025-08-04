@@ -179,13 +179,20 @@
                                         {{ $log->created_at->format('Y-m-d H:i:s') }}
                                     </td>
                                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
-                                        <span class="px-2 py-1 rounded-full text-xs font-semibold
-                                            @if($log->description === 'created') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100
-                                            @elseif($log->description === 'updated') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100
-                                            @elseif($log->description === 'deleted') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100
-                                            @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100
-                                            @endif">
-                                            {{ ucfirst($log->description) }}
+                                        <span class="px-2 py-1 rounded-full text-xs font-semibold"
+                                            style="
+                                                @if($log->description === 'Diet amount created') background-color: #d4edda; color: #155724;
+                                                @elseif($log->description === 'Diet amount updated') background-color: #cce5ff; color: #004085;
+                                                @elseif($log->description === 'Diet amount deleted') background-color: #f8d7da; color: #721c24;
+                                                @else background-color: #e2e3e5; color: #383d41;
+                                                @endif">
+                                            @if(request('Language') === 'Sin')
+                                                ආහාර ප්‍රමාණය {{ $log->description }}
+                                            @elseif(request('Language') === 'Tam')
+                                                உணவு அளவு {{ $log->description }}
+                                            @else
+                                                Diet amount {{ $log->description }}
+                                            @endif
                                         </span>
                                     </td>
                                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-gray-100">
@@ -216,7 +223,7 @@
                                             @elseif(isset($attributes['amount']))
                                                 <span class="text-green-600 dark:text-green-400">{{ $attributes['amount'] }}</span>
                                             @endif
-                                        @elseif($log->description === 'created' && $log->properties && isset($log->properties['attributes']))
+                                        @elseif($log->description === 'Diet amount created' && $log->properties && isset($log->properties['attributes']))
                                             <span class="text-green-600 dark:text-green-400">
                                                 @if(request('Language') === 'Sin')
                                                     නව ප්‍රමාණය: {{ $log->properties['attributes']['amount'] ?? 'N/A' }}
@@ -224,6 +231,22 @@
                                                     புதிய அளவு: {{ $log->properties['attributes']['amount'] ?? 'N/A' }}
                                                 @else
                                                     New amount: {{ $log->properties['attributes']['amount'] ?? 'N/A' }}
+                                                @endif
+                                            </span>
+                                        @elseif($log->description === 'Diet amount updated' && $log->properties && isset($log->properties['attributes']['amount']) && isset($log->properties['old']['amount']))
+                                            <div class="text-sm">
+                                                <span class="text-red-600 dark:text-red-400">{{ $log->properties['old']['amount'] }}</span>
+                                                <span class="mx-2">→</span>
+                                                <span class="text-green-600 dark:text-green-400">{{ $log->properties['attributes']['amount'] }}</span>
+                                            </div>
+                                        @elseif($log->description === 'Diet amount deleted' && $log->properties && isset($log->properties['old']['amount']))
+                                            <span class="text-red-600 dark:text-red-400">
+                                                @if(request('Language') === 'Sin')
+                                                    ඉවත් කළ ප්‍රමාණය: {{ $log->properties['old']['amount'] }}
+                                                @elseif(request('Language') === 'Tam')
+                                                    நீக்கப்பட்ட அளவு: {{ $log->properties['old']['amount'] }}
+                                                @else
+                                                    Deleted amount: {{ $log->properties['old']['amount'] }}
                                                 @endif
                                             </span>
                                         @else
@@ -276,14 +299,37 @@
 
 <script src="{{ asset('js/dataTables/jquery-3.7.1.js') }}"></script>
 <script src="{{ asset('js/dataTables/dataTables.min.js') }}"></script>
-{{-- <script>
+<script>
     $(document).ready(function() {
-        $('#activityLogTable').DataTable({
-            // This is an example of how to disable ordering on specific columns
-            // You can adjust the column indexes as needed (0-indexed)
+        var table = $('#activityLogTable').DataTable({
+            "paging": false, // Disable pagination
+            "searching": false, // Disable global search
+            "info": false, // Disable table information
             "columnDefs": [
-                { "orderable": false, "targets": [3] } // Disables sorting on the "Changes" column
+                { "orderable": false, "targets": [3] }, // Disable sorting on the "Changes" column
+                { "searchable": true, "targets": [4, 2] }, // Enable filtering for User and Diet Name columns
+                { "searchable": false, "targets": "_all" } // Disable filtering for all other columns
             ]
         });
+
+        // Add column-specific filters for User and Diet Name
+        table.columns([4, 2]).every(function(colIdx) {
+            var column = this;
+            var select = $('<select><option value="">Filter</option></select>')
+                .appendTo($(column.footer()).empty())
+                .on('change', function() {
+                    column
+                        .search($(this).val())
+                        .draw();
+                });
+
+            column
+                .cache('search')
+                .sort()
+                .unique()
+                .each(function(d) {
+                    select.append($('<option value="' + d + '">' + d + '</option>'));
+                });
+        });
     });
-</script> --}}
+</script>
