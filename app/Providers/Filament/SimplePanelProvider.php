@@ -40,6 +40,7 @@ class SimplePanelProvider extends PanelProvider
                 Calender::class,
                 \App\Filament\Simple\Pages\UnitDietEntry::class,
                 \App\Filament\Simple\Pages\PatientEntry::class,
+                \App\Filament\Simple\Pages\UnitDietLogs::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Simple/Widgets'), for: 'App\\Filament\\Simple\\Widgets')
             ->widgets([

@@ -6,6 +6,9 @@
             <span class="mx-2">&gt;</span>
             <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
             <span class="mx-2">&gt;</span>
+            <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
+
+            <span class="mx-2">&gt;</span>
             <span class="text-gray-500 dark:text-gray-400">{{ $units->firstWhere('id', request('unit_id'))->name ?? 'Unknown Unit' }}</span>
         </div>
         <div class="flex gap-2">
@@ -231,6 +234,17 @@
                             Back
                         @endif
                     </a>
+                    @if(Auth::user() && userHasPermission(Auth::user(), 'log_view.unit-simple_panel'))
+                        <a href="{{ url('/simple/unit-diet-logs') . '?date=' . urlencode($date) . '&unit_id=' . urlencode(request('unit_id')) }}" class="filament-button filament-button-primary bg-pink-600 text-white hover:bg-pink-700 focus:ring-pink-500 px-4 py-2 " style="background-color: #EC4899; border-color: #EC4899; color: #fff;">
+                            @if(request('Language') === 'Sin')
+                                ක්‍රියාකාරකම් ලොග්
+                            @elseif(request('Language') === 'Tam')
+                                செயல்பாட்டு பதிவுகள்
+                            @else
+                                View Activity Logs
+                            @endif
+                        </a>
+                    @endif
                 </div>
             </form>
         </div>

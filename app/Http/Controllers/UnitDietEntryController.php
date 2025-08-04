@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\HospitalUnitDietAmount;
 
 class UnitDietEntryController extends Controller{
@@ -25,27 +26,54 @@ class UnitDietEntryController extends Controller{
         $unitId = $request->input('unit_id');
         $patientId = $request->input('patient_id');
 
-        foreach ($dietAmounts as $dietId => $amount) {
-            HospitalUnitDietAmount::updateOrCreate(
-                [
-                    'hospital_unit_id' => $unitId,
-                    'simple_diet_id' => $dietId,
-                    'patient_id' => $patientId,
-                    'date' => $date,
+        $updatedCount = 0;
+        $createdCount = 0;
 
-                ],
-                [
-                    'amount' => $amount,
-                    'created_by_userid' => auth()->id(),
+        foreach ($dietAmounts as $dietId => $amount) {
+            // Skip if amount is null, empty, or zero
+            if ($amount === null || $amount === '' || $amount === 0) {
+                continue;
+            }
+
+            // Find existing record
+            $existingRecord = HospitalUnitDietAmount::where([
+                'hospital_unit_id' => $unitId,
+                'simple_diet_id' => $dietId,
+                'patient_id' => $patientId,
+                'date' => $date,
+            ])->first();
+
+            // Check if this is a new record or amount has changed
+            if (!$existingRecord) {
+                // Create new record
+                HospitalUnitDietAmount::create([
                     'hospital_unit_id' => $unitId,
                     'simple_diet_id' => $dietId,
                     'patient_id' => $patientId,
                     'date' => $date,
-                ]
-            );
+                    'amount' => $amount,
+                    'created_by_userid' => Auth::id(),
+                ]);
+                $createdCount++;
+            } elseif ($existingRecord->amount != $amount) {
+                // Update only if amount has changed
+                $existingRecord->update([
+                    'amount' => $amount,
+                    'created_by_userid' => Auth::id(),
+                ]);
+                $updatedCount++;
+            }
+            // If amount is the same, skip (no update needed)
         }
 
-        return redirect()->back()->with('success', 'Patient diet amounts saved successfully.');
+        $message = "Patient diet amounts saved successfully.";
+        if ($createdCount > 0 || $updatedCount > 0) {
+            $message = "Patient diet amounts saved: {$createdCount} created, {$updatedCount} updated.";
+        } else {
+            $message = "No changes detected in patient diet amounts.";
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 
     /**
@@ -121,20 +149,51 @@ class UnitDietEntryController extends Controller{
         $date = $request->input('date');
         $unitId = $request->input('unit_id');
 
+        $updatedCount = 0;
+        $createdCount = 0;
+
         foreach ($dietAmounts as $dietId => $amount) {
-            HospitalUnitDietAmount::updateOrCreate(
-                [
+            // Skip if amount is null, empty, or zero
+            if ($amount === null || $amount === '' || $amount === 0) {
+                continue;
+            }
+
+            // Find existing record
+            $existingRecord = HospitalUnitDietAmount::where([
+                'hospital_unit_id' => $unitId,
+                'simple_diet_id' => $dietId,
+                'date' => $date,
+            ])->first();
+
+            // Check if this is a new record or amount has changed
+            if (!$existingRecord) {
+                // Create new record
+                HospitalUnitDietAmount::create([
                     'hospital_unit_id' => $unitId,
                     'simple_diet_id' => $dietId,
                     'date' => $date,
-                ],
-                [
                     'amount' => $amount,
-                    'created_by_userid' => auth()->id(),
-                ]
-            );
+                    'created_by_userid' => Auth::id(),
+                ]);
+                $createdCount++;
+            } elseif ($existingRecord->amount != $amount) {
+                // Update only if amount has changed
+                $existingRecord->update([
+                    'amount' => $amount,
+                    'created_by_userid' => Auth::id(),
+                ]);
+                $updatedCount++;
+            }
+            // If amount is the same, skip (no update needed)
         }
 
-        return redirect()->back()->with('success', 'Diet amounts saved successfully.');
+        $message = "Diet amounts saved successfully.";
+        if ($createdCount > 0 || $updatedCount > 0) {
+            $message = "Diet amounts saved: {$createdCount} created, {$updatedCount} updated.";
+        } else {
+            $message = "No changes detected in diet amounts.";
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 }

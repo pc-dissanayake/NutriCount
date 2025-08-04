@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -29,7 +30,9 @@ class HospitalUnitDietAmount extends Model
         return LogOptions::defaults()
             ->logAll()
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Diet amount {$eventName}")
+            ->useLogName('diet_amounts');
     }
 
     protected static function boot()
@@ -38,6 +41,17 @@ class HospitalUnitDietAmount extends Model
         static::creating(function ($model) {
             if (empty($model->{$model->getKeyName()})) {
                 $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+            // Set the created_by_userid to current authenticated user if not set
+            if (empty($model->created_by_userid) && Auth::check()) {
+                $model->created_by_userid = Auth::id();
+            }
+        });
+        
+        static::updating(function ($model) {
+            // Update created_by_userid on updates as well
+            if (Auth::check()) {
+                $model->created_by_userid = Auth::id();
             }
         });
     }

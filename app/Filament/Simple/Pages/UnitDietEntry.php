@@ -71,7 +71,10 @@ class UnitDietEntry extends Page
                     'simple_diet_id' => $dietId,
                     'date' => $this->date,
                 ],
-                ['amount' => $amount]
+                [
+                    'amount' => $amount,
+                    'created_by_userid' => Auth::id(),
+                ]
             );
         }
         \Filament\Notifications\Notification::make()

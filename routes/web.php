@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\UnitDietEntryController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ActivityLogTestController;
 
     Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -17,6 +19,17 @@ use App\Http\Controllers\WelcomeController;
         Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
         Volt::route('settings/password', 'settings.password')->name('settings.password');
         Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+        
+        // Activity Log API routes
+        Route::prefix('api/activity-logs')->group(function () {
+            Route::get('/', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+            Route::get('/stats', [ActivityLogController::class, 'stats'])->name('activity-logs.stats');
+            Route::post('/diet-amount', [ActivityLogController::class, 'createDietAmount'])->name('activity-logs.create-diet-amount');
+            
+            // Test routes (remove in production)
+            Route::get('/test', [ActivityLogTestController::class, 'testLogging'])->name('activity-logs.test');
+            Route::get('/demo-filters', [ActivityLogTestController::class, 'demonstrateFiltering'])->name('activity-logs.demo-filters');
+        });
     });
 
     Route::post('/simple/unit-diet-entry/save', [UnitDietEntryController::class, 'saveDietAmounts'])->name('unit-diet-entry.save');
