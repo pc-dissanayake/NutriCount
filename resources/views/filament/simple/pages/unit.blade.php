@@ -18,19 +18,7 @@
             @endif
         </div>
     </nav>
-                @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
-    <div class="bg-gray-200 dark:bg-gray-900 p-6 sm:p-10 md:p-16 mt-20 rounded-xl">
-        <div class="container mx-auto">
-            <!-- Add link to Diet Analysis -->
-            <div class="mb-4">
-                <a href="{{ url('/simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
-                    class="bg-primary-500 text-white h-full rounded-md border border-primary-500 p-3 hover:bg-primary-600 hover:border-primary-600 sm:rounded-xl sm:p-4">
-                    Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
-                </a>
-            </div>
-        </div>
-    </div>
-    @endif
+          
 
     <!-- Unit Cards Section -->
     <section class="bg-gray-200 dark:bg-gray-800 p-6 sm:p-10 md:p-8 rounded-xl">
@@ -60,4 +48,33 @@
             </div>
         </div>
     </section>
+
+                   @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel')
+                   || Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel'))
+  <div class="bg-gray-200 dark:bg-gray-900 p-6 sm:p-10 md:p-16 mt-20 rounded-xl">
+        <div class="container mx-auto">
+            <div class="flex flex-col gap-4 mb-4">
+
+ @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
+                <a href="{{ url('/simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
+                    class="bg-primary-500 text-white h-full rounded-md border border-primary-500 p-3 hover:bg-primary-600 hover:border-primary-600 sm:rounded-xl sm:p-4">
+                    Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
+                </a>
+@endif
+
+@if(Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel'))
+                <a href="{{ url('/simple/unit-diet-analysis') . '?start_date=' . \Carbon\Carbon::parse(request('date'))->startOfMonth()->toDateString() . '&end_date=' . \Carbon\Carbon::parse(request('date'))->endOfMonth()->toDateString() }}" 
+                    class="h-full rounded-md border p-3 sm:rounded-xl sm:p-4 text-white border-pink-700 bg-pink-600 hover:bg-pink-700 hover:border-pink-800"
+                    style="background-color: #be185d; border-color: #831843;">
+                    Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
+                </a>
+@endif
+
+            </div>
+        </div>
+    </div>
+
+@endif
+
+
 </x-filament-panels::page>
