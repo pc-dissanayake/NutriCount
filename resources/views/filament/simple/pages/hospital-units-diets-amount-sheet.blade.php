@@ -1,20 +1,39 @@
 <x-filament-panels::page>
 
 <script src="{{ asset('js/dataTables/popper.min.js') }}"></script>
+@php
 
+$currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
+
+@endphp
  <!-- Breadcrumb System -->
     <nav class="flex items-center justify-between text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded-full">
         <div class="flex items-center">
-            <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">Home</a>
+            <a href="{{ url('/simple/calender') }}" class="text-blue-500 hover:underline">
+                @if($currentDisplayLang === 'Sin')
+                    මුල් පිටුව
+                @elseif($currentDisplayLang === 'Tam')
+                    முகப்பு
+                @else
+                    Home
+                @endif
+            </a>
             <span class="mx-2">&gt;</span>
-            <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 'No Date Selected' }}</a>
+            <a href="{{ url('/simple/unit') . '?date=' . urlencode($date) }}" class="text-blue-500 hover:underline">{{ $date ?? 
+                ($currentDisplayLang === 'Sin' ? 'දිනයක් තෝරා නැත' : 
+                ($currentDisplayLang === 'Tam' ? 'தேதி தேர்ந்தெடுக்கப்படவில்லை' : 'No Date Selected')) }}</a>
             <span class="mx-2">&gt;</span>
-            <span class="text-gray-500 dark:text-gray-400">Hospital Diet Sheet </span>
+            <span class="text-gray-500 dark:text-gray-400">
+                @if($currentDisplayLang === 'Sin')
+                    රෝහල් ආහාර පත්‍රිකාව
+                @elseif($currentDisplayLang === 'Tam')
+                    மருத்துவமனை உணவு தாள்
+                @else
+                    Hospital Diet Sheet
+                @endif
+            </span>
         </div>
         <div class="flex gap-2">
-            @php
-                $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
-            @endphp
             @if($currentDisplayLang !== 'Eng')
                 <a href="{{ url()->current() . '?' . http_build_query(array_merge(request()->except('Language'), ['Language' => 'Eng'])) }}" class="filament-button filament-button-primary px-3 py-1 rounded-xl" style="background-color: #8D153A; color: #fff; border-color: #8D153A;">English</a>
             @endif
@@ -30,11 +49,35 @@
 
     <!-- Tab Movement Button -->
     <div class="mb-4 flex items-center gap-3">
-        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Tab Movement:</label>
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            @if($currentDisplayLang === 'Sin')
+                ටැබ් චලනය:
+            @elseif($currentDisplayLang === 'Tam')
+                தாவல் இயக்கம்:
+            @else
+                Tab Movement:
+            @endif
+        </label>
         <button type="button" id="tabMovementToggle" 
             class="px-4 py-2 text-sm font-medium text-white bg-blue-400 rounded hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
             style="background-color: #60A5FA; color: #FFFFFF; border-color: #3B82F6;">
-            {{ $tabMovement === 'LR' ? 'Switch to Column-wise (Top to Bottom)' : 'Switch to Row-wise (Left to Right)' }}
+            @if($tabMovement === 'LR')
+                @if($currentDisplayLang === 'Sin')
+                    තීරු අනුව වෙනස් කරන්න (ඉහළ සිට පහළට)
+                @elseif($currentDisplayLang === 'Tam')
+                    நெடுவரிசையாக மாற்றவும் (மேலிருந்து கீழாக)
+                @else
+                    Switch to Column-wise (Top to Bottom)
+                @endif
+            @else
+                @if($currentDisplayLang === 'Sin')
+                    පේළි අනුව වෙනස් කරන්න (වමේ සිට දකුණට)
+                @elseif($currentDisplayLang === 'Tam')
+                    வரிசையாக மாற்றவும் (இடமிருந்து வலமாக)
+                @else
+                    Switch to Row-wise (Left to Right)
+                @endif
+            @endif
         </button>
     </div>
 
@@ -44,12 +87,10 @@
                 <thead>
                     <tr>
                         <th class="border px-2 py-1 bg-gray-100 dark:bg-gray-700 sticky left-0 top-0 z-20" style="min-width: 20ch;">
-                            @php
-                                $currentLang = request('Language') ?? $defaultLanguage ?? 'Eng';
-                            @endphp
-                            @if($currentLang === 'Sin')
+                            
+                            @if($currentDisplayLang === 'Sin')
                                 ඒකකය \ ආහාරය
-                            @elseif($currentLang === 'Tam')
+                            @elseif($currentDisplayLang === 'Tam')
                                 பிரிவு \ உணவு
                             @else
                                 Unit \ Diet
@@ -58,9 +99,9 @@
                         @foreach ($diets as $diet)
                             <th class="border px-2 py-1 bg-gray-100 dark:bg-gray-700 sticky top-0 z-10 {{ $loop->index % 2 == 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-green-50 dark:bg-green-900/20' }}">
                                 <div>
-                                    @if($currentLang === 'Sin')
+                                    @if($currentDisplayLang === 'Sin')
                                         {{ $diet->DietName_si }}
-                                    @elseif($currentLang === 'Tam')
+                                    @elseif($currentDisplayLang === 'Tam')
                                         {{ $diet->DietName_tm }}
                                     @else
                                         {{ $diet->DietName_en }}
@@ -93,7 +134,7 @@
                                         'piece' => 'pieces', 'serving' => 'servings', 'slice' => 'slices', 'portion' => 'portions', 'drop' => 'drops', 'pinch' => 'pinches', 'sheet' => 'sheets', 'package' => 'packages', 'container' => 'containers', 'can' => 'cans', 'bottle' => 'bottles', 'jar' => 'jars', 'bag' => 'bags', 'box' => 'boxes', 'bar' => 'bars', 'packet' => 'packets', 'tube' => 'tubes', 'unit' => 'units',
                                     ];
                                     $stepValue = $unitSteps[$diet->primary_amount_unit] ?? '0.01';
-                                    $currentLang = request('Language') ?? $defaultLanguage ?? 'Eng';
+                                    $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                                 @endphp
                                 <td class="border px-2 py-1 {{ $loop->index % 2 == 0 ? 'bg-blue-50 dark:bg-blue-900/10' : 'bg-green-50 dark:bg-green-900/10' }}">
                                     <input
@@ -104,7 +145,7 @@
                                         min="0"
                                         style="min-width: 10ch;"
                                         data-ward="{{ $unit->name }}"
-                                        data-diet="@if($currentLang === 'Sin'){{ $diet->DietName_si }}@elseif($currentLang === 'Tam'){{ $diet->DietName_tm }}@else{{ $diet->DietName_en }}@endif"
+                                        data-diet="@if($currentDisplayLang === 'Sin'){{ $diet->DietName_si }}@elseif($currentDisplayLang === 'Tam'){{ $diet->DietName_tm }}@else{{ $diet->DietName_en }}@endif"
                                     />
                                 </td>
                             @endforeach
@@ -116,9 +157,32 @@
             </table>
         </div>
 
-        <div class="mt-4">
-            <x-filament::button type="submit">Save</x-filament::button>
+        <div class="mt-4 pt-4 flex justify-stretch items-center gap-6">
+            <x-filament::button class="" type="submit">
+                @if($currentDisplayLang === 'Sin')
+                    සුරකින්න
+                @elseif($currentDisplayLang === 'Tam')
+                    சேமிக்கவும்
+                @else
+                    Save
+                @endif
+            </x-filament::button>
+        
+    @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
+        <a href="{{ url('/simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
+        class=" p-2 rounded-md border sm:rounded-xl text-white border-pink-800 bg-pink-700 hover:bg-pink-800 hover:border-pink-900"
+        style="background-color: #9d174d; border-color: #831843;">
+        @if($currentDisplayLang === 'Sin')
+            ශ්‍රී ලංකා ජාතික රෝහලේ {{ urlencode(request('date')) ?? 'දිනයක් තෝරා නැත' }} දිනයේ සම්පූර්ණ ආහාර විශ්ලේෂණයට යන්න
+        @elseif($currentDisplayLang === 'Tam')
+            {{ urlencode(request('date')) ?? 'தேதி தேர்ந்தெடுக்கப்படவில்லை' }} அன்று இலங்கை தேசிய மருத்துவமனையின் மொத்த உணவு பகுப்பாய்வுக்கு செல்லவும்
+        @else
+            Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
+        @endif
+        </a>
+    @endif
         </div>
+
     </form>
 
     <script>
@@ -126,11 +190,33 @@
             let tabMovement = @json($tabMovement === 'LR'); // Convert LR/TB to boolean
             let moveCount = 0;
             let hasUnsavedChanges = false;
+            const currentLang = @json($currentDisplayLang);
             const inputs = document.querySelectorAll('input[type="number"]');
             const toggleButton = document.getElementById('tabMovementToggle');
             const toggleSlider = document.getElementById('toggleSlider');
             const toggleLabel = document.getElementById('toggleLabel');
             const tableContainer = document.getElementById('tableContainer');
+            
+            // Language-specific messages
+            const messages = {
+                'Sin': {
+                    unsavedChanges: 'ඔබට නොසුරකින ලද වෙනස්කම් ඇත. ඔබට පිටවීමට අවශ්‍යද?',
+                    ward: 'වාට්ටුව',
+                    diet: 'ආහාරය'
+                },
+                'Tam': {
+                    unsavedChanges: 'உங்களிடம் சேமிக்கப்படாத மாற்றங்கள் உள்ளன. நீங்கள் நிச்சயமாக வெளியேற விரும்புகிறீர்களா?',
+                    ward: 'பிரிவு',
+                    diet: 'உணவு'
+                },
+                'Eng': {
+                    unsavedChanges: 'You have unsaved changes. Are you sure you want to leave?',
+                    ward: 'Ward',
+                    diet: 'Diet'
+                }
+            };
+            
+            const currentMessages = messages[currentLang] || messages['Eng'];
             
             // Initialize frozen table functionality
             function initializeFrozenTable() {
@@ -195,8 +281,8 @@
             window.addEventListener('beforeunload', function(e) {
                 if (hasUnsavedChanges) {
                     e.preventDefault();
-                    e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-                    return 'You have unsaved changes. Are you sure you want to leave?';
+                    e.returnValue = currentMessages.unsavedChanges;
+                    return currentMessages.unsavedChanges;
                 }
             });
             
@@ -232,7 +318,7 @@
                 const diet = input.dataset.diet;
                 
                 if (ward && diet) {
-                    tooltip.textContent = `Ward: ${ward} | Diet: ${diet}`;
+                    tooltip.textContent = `${currentMessages.ward}: ${ward} | ${currentMessages.diet}: ${diet}`;
                     tooltip.style.display = 'block';
                     
                     if (currentPopperInstance) {

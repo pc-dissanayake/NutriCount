@@ -124,7 +124,6 @@
                         Go to Total Diet Analysis of {{ config('app.hospital_name') }} for the month {{ $currentMonth->format('F Y') ?? 'No Month Selected' }}
                     </a>
                     @endif
-
                 </div>
                 <br />
                 <!-- Add link to Diet Analysis for selected year -->

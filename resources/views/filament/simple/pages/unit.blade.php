@@ -64,11 +64,12 @@
         <div class="container mx-auto">
             <div class="flex flex-col gap-4 mb-4">
 
- @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
-                <a href="{{ url('/simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
-                    class="bg-primary-500 text-white h-full rounded-md border border-primary-500 p-3 hover:bg-primary-600 hover:border-primary-600 sm:rounded-xl sm:p-4">
-                    Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
-                </a>
+@if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
+    <a href="{{ url('/simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
+        class="h-full rounded-md border p-3 sm:rounded-xl sm:p-4 text-white border-pink-800 bg-pink-700 hover:bg-pink-800 hover:border-pink-900"
+        style="background-color: #9d174d; border-color: #831843;">
+        Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
+    </a>
 @endif
 
 @if(Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel'))
