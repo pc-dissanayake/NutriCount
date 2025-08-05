@@ -101,7 +101,6 @@ class HospitalUnitResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -137,14 +136,18 @@ class HospitalUnitResource extends Resource
     
     public static function canDelete(Model $record): bool
     {
-        $user = Auth::user();
-        return $user ? userHasPermission($user, 'delete.HospitalUnit') : false;
+        // $user = Auth::user();
+        // return $user ? userHasPermission($user, 'delete.HospitalUnit') : false;
+                return false; // Disable  delete for now
+
     }
     
     public static function canDeleteAny(): bool
     {
-        $user = Auth::user();
-        return $user ? userHasPermission($user, 'delete.HospitalUnit') : false;
+        // $user = Auth::user();
+        // return $user ? userHasPermission($user, 'delete.HospitalUnit') : false;
+
+        return false; // Disable bulk delete for now
     }
     
     public static function canView(Model $record): bool

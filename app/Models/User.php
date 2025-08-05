@@ -29,7 +29,8 @@ class User extends Authenticatable
         'role',
         'active',
         'default_lang',
-        'units_assigned'
+        'units_assigned',
+        'default_movement'
     ];
 
     /**
@@ -78,7 +79,17 @@ class User extends Authenticatable
             ->implode('');
     }
 
-   
+    public function getAssignedUnits(): string
+    {
+        if (!$this->units_assigned || !is_array($this->units_assigned) || count($this->units_assigned) === 0) {
+            return 'No units assigned';
+        }
 
-
+        try {
+            $units = HospitalUnit::whereIn('id', $this->units_assigned)->pluck('name')->toArray();
+            return implode(', ', $units);
+        } catch (\Exception $e) {
+            return 'Error loading units';
+        }
+    }
 }

@@ -18,8 +18,17 @@
             @endif
         </div>
     </nav>
-          
+     
+      <div class="bg-gray-200 dark:bg-gray-900 p-6 sm:p-10 md:p-16 mt-20 rounded-xl">
+        <div class="container mx-auto">
+            <div class="flex flex-col gap-4 mb-4">
 
+    <a href="{{ route('filament.simple.pages.hospital-units-diets-amount-sheet', ['date' => request('date')]) }}"
+        class="h-full rounded-md border p-3 sm:rounded-xl sm:p-4 text-white border-blue-700 bg-blue-600 hover:bg-blue-700 hover:border-blue-800"
+        style="background-color: #2563eb; border-color: #1d4ed8;">
+        Go to Hospital Units Diets Amount Sheet
+    </a>
+</div></div></div>
     <!-- Unit Cards Section -->
     <section class="bg-gray-200 dark:bg-gray-800 p-6 sm:p-10 md:p-8 rounded-xl">
         <div class="container mx-auto">
@@ -69,6 +78,8 @@
                     Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
                 </a>
 @endif
+
+
 
             </div>
         </div>

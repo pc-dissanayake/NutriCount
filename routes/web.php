@@ -6,6 +6,7 @@ use App\Http\Controllers\UnitDietEntryController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ActivityLogTestController;
+use App\Http\Controllers\DietAmountController;
 
     Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -35,4 +36,7 @@ use App\Http\Controllers\ActivityLogTestController;
     Route::post('/simple/unit-diet-entry/save', [UnitDietEntryController::class, 'saveDietAmounts'])->name('unit-diet-entry.save');
 
     Route::post('/simple/paient-individual-diet/save', [UnitDietEntryController::class, 'saveIndividualDietAmounts'])->name('paient-individual-diet.save');
+
+    Route::post('/save-diet-amounts', [DietAmountController::class, 'save'])->name('save-diet-amounts');
 require __DIR__.'/auth.php';
+require __DIR__.'/filament.php';

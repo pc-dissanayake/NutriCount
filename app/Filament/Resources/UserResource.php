@@ -120,18 +120,9 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('default_lang')->label('Language'),
                 Tables\Columns\TextColumn::make('units_assigned')
                     ->label('Units Assigned')
-                    ->formatStateUsing(function ($state) {
-                        // Handle null, empty, or non-array values
-                        if (!$state || !is_array($state) || count($state) === 0) {
-                            return 'No units assigned';
-                        }
-                        
-                        try {
-                            $units = \App\Models\HospitalUnit::whereIn('id', $state)->pluck('name')->toArray();
-                            return implode(', ', $units);
-                        } catch (\Exception $e) {
-                            return 'Error loading units';
-                        }
+                    ->formatStateUsing(function ($state, $record) {
+                        // Use the User model's getAssignedUnits method
+                        return $record->getAssignedUnits();
                     }),
                 Tables\Columns\ToggleColumn::make('active'),
             ])
