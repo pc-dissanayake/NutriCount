@@ -517,11 +517,9 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                     hasUnsavedChanges = true;
                 });
                 
-                // Tooltip events
+                // Tooltip events - only show on focus (selected input), not on mouse hover
                 input.addEventListener('focus', () => showTooltip(input));
-                input.addEventListener('mouseenter', () => showTooltip(input));
                 input.addEventListener('blur', hideTooltip);
-                input.addEventListener('mouseleave', hideTooltip);
                 
                 // Tab movement and arrow key navigation
                 input.addEventListener('keydown', function(e) {
@@ -584,8 +582,13 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                         if (currentRow < rows.length - 1) {
                             nextIndex = currentIndex + cols;
                         } else {
-                            // Wrap to first row of same column
-                            nextIndex = currentCol;
+                            // Wrap to first row of next column
+                            if (currentCol < cols - 1) {
+                                nextIndex = currentCol + 1;
+                            } else {
+                                // If at last column, wrap to first column first row
+                                nextIndex = 0;
+                            }
                         }
                     } else if (e.key === 'ArrowUp') {
                         e.preventDefault();
@@ -593,8 +596,13 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                         if (currentRow > 0) {
                             nextIndex = currentIndex - cols;
                         } else {
-                            // Wrap to last row of same column
-                            nextIndex = ((rows.length - 1) * cols) + currentCol;
+                            // Wrap to last row of previous column
+                            if (currentCol > 0) {
+                                nextIndex = ((rows.length - 1) * cols) + (currentCol - 1);
+                            } else {
+                                // If at first column, wrap to last column last row
+                                nextIndex = (rows.length * cols) - 1;
+                            }
                         }
                     } else if (e.key === 'Enter') {
                         e.preventDefault();
