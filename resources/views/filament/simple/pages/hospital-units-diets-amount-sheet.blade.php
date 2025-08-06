@@ -48,7 +48,101 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
     </nav>
 
     <!-- Tab Movement Button -->
-    <div class="mb-4 flex items-center gap-3">
+
+    <div class="mb-4 flex items-center justify-between gap-3">
+        <div>
+        <button id="autoPopulateBtn" class="x-4 p-2 text-sm font-medium text-white bg-blue-400 rounded hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2" type="button" style="background-color: #ad1457; color: #ffffff; border-color: #ad1457;">
+            @if($currentDisplayLang === 'Sin')
+                ස්වයං පුරවන්න 
+            @elseif($currentDisplayLang === 'Tam')
+                தானாக நிரப்பவும் 
+            @else
+                Auto Populate
+            @endif
+        </button>
+        </div>
+
+        <!-- Modal -->
+                <!-- Modal -->
+        <div id="autoPopulateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-xs" style="background-color: #ffffff; color: #000000; border-radius: 0.5rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); padding: 1.5rem; max-width: 20rem;">
+            <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100" style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: #1f2937;">
+                @if($currentDisplayLang === 'Sin')
+                දිනය තෝරන්න
+                @elseif($currentDisplayLang === 'Tam')
+                தேதி தேர்ந்தெடுக்கவும்
+                @else
+                Select Date
+                @endif
+            </h3>
+            <input type="date" id="autoPopulateDate" class="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" style="width: 100%; border: 1px solid #d1d5db; border-radius: 0.25rem; padding: 0.5rem; margin-bottom: 1rem; background-color: #ffffff; color: #1f2937;">
+            <div class="flex justify-end gap-2" style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                <button id="autoPopulateCancel" type="button" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200" style="padding: 0.25rem 0.75rem; border-radius: 0.25rem; background-color: #e5e7eb; color: #1f2937;">
+                @if($currentDisplayLang==='Sin')
+                    අවලංගු කරන්න
+                @elseif($currentDisplayLang==='Tam')
+                    ரத்து செய்க
+                @else
+                    Cancel
+                @endif
+                </button>
+                <button id="autoPopulateConfirm" type="button" class="px-3 py-1 rounded bg-blue-600 text-white" style="padding: 0.25rem 0.75rem; border-radius: 0.25rem; background-color: #2563eb; color: #ffffff;">
+                @if($currentDisplayLang==='Sin')
+                    තහවුරු කරන්න
+                @elseif($currentDisplayLang==='Tam')
+                    உறுதிப்படுத்தவும்
+                @else
+                    Confirm
+                @endif
+                </button>
+            </div>
+            </div>
+        </div>
+
+        <!-- Clear All Confirmation Modal -->
+        <div id="clearAllModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden" >
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md" style="background-color: #ffffff; color: #000000; border-radius: 0.5rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); padding: 1.5rem; max-width: 28rem;">
+            <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100" style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: #1f2937;">
+                @if($currentDisplayLang === 'Sin')
+                තහවුරු කරන්න
+                @elseif($currentDisplayLang === 'Tam')
+                உறுதிப்படுத்தவும்
+                @else
+                Confirm Clear All
+                @endif
+            </h3>
+            <p class="mb-4 text-gray-700 dark:text-gray-300" style="margin-bottom: 1rem; color: #374151;">
+                @if($currentDisplayLang === 'Sin')
+                {{ $date }} දිනය සඳහා සියලුම දත්ත මකා දැමීමට ඔබට අවශ්‍යද? මෙම ක්‍රියාව අවලංගු කළ නොහැක.
+                @elseif($currentDisplayLang === 'Tam')
+                {{ $date }} தேதிக்கான அனைத்து தரவையும் நீக்க விரும்புகிறீர்களா? இந்த செயலை மாற்ற முடியாது.
+                @else
+                Are you sure you want to clear all data for {{ $date }}? This action cannot be undone.
+                @endif
+            </p>
+            <div class="flex justify-end gap-2" style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                <button id="clearAllCancel" type="button" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200" style="padding: 0.25rem 0.75rem; border-radius: 0.25rem; background-color: #e5e7eb; color: #1f2937;">
+                @if($currentDisplayLang==='Sin')
+                    අවලංගු කරන්න
+                @elseif($currentDisplayLang==='Tam')
+                    ரத்து செய்க
+                @else
+                    Cancel
+                @endif
+                </button>
+                <button id="clearAllConfirm" type="button" class="px-3 py-1 rounded bg-red-600 text-white" style="padding: 0.25rem 0.75rem; border-radius: 0.25rem; background-color: #dc2626; color: #ffffff;">
+                @if($currentDisplayLang==='Sin')
+                    සියල්ල මකන්න
+                @elseif($currentDisplayLang==='Tam')
+                    அனைத்தையும் அழிக்கவும்
+                @else
+                    Clear All
+                @endif
+                </button>
+            </div>
+            </div>
+        </div>
+<div>
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
             @if($currentDisplayLang === 'Sin')
                 ටැබ් චලනය:
@@ -58,10 +152,11 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                 Tab Movement:
             @endif
         </label>
+
         <button type="button" id="tabMovementToggle" 
             class="px-4 py-2 text-sm font-medium text-white bg-blue-400 rounded hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
             style="background-color: #60A5FA; color: #FFFFFF; border-color: #3B82F6;">
-            @if($tabMovement === 'LR')
+            @if($tabMovement === 'TB')
                 @if($currentDisplayLang === 'Sin')
                     තීරු අනුව වෙනස් කරන්න (ඉහළ සිට පහළට)
                 @elseif($currentDisplayLang === 'Tam')
@@ -80,8 +175,10 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
             @endif
         </button>
     </div>
+    </div>
 
     <form wire:submit.prevent="save">
+        <input type="hidden" wire:model="date" name="date" />
         <div class="overflow-auto relative" id="tableContainer" style="max-height: 70vh;">
             <table class="table-auto border border-gray-300 w-full text-sm">
                 <thead>
@@ -136,7 +233,7 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                                     $stepValue = $unitSteps[$diet->primary_amount_unit] ?? '0.01';
                                     $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                                 @endphp
-                                <td class="border px-2 py-1 {{ $loop->index % 2 == 0 ? 'bg-blue-50 dark:bg-blue-900/10' : 'bg-green-50 dark:bg-green-900/10' }}">
+                                <td class="border px-2 py-1 {{ $loop->index % 2 == 0 ? 'bg-blue-50 dark:bg-blue-900/10' : 'bg-green-50 dark:bg-green-900/10' }} {{ $diet->auto_populate ? 'bg-gray-200 dark:bg-gray-700/60' : '' }}">
                                     <input
                                         type="number"
                                         wire:model.defer="amounts.{{ $unit->id }}.{{ $diet->id }}"
@@ -167,17 +264,29 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                     Save
                 @endif
             </x-filament::button>
+
+            <x-filament::button color="danger" id="clearAllBtn" type="button">
+                @if($currentDisplayLang === 'Sin')
+                    සියල්ල මකන්න
+                @elseif($currentDisplayLang === 'Tam')
+                    அனைத்தையும் அழிக்கவும்
+                @else
+                    Clear All
+                @endif
+            </x-filament::button>
+
+
         
     @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
-        <a href="{{ url('/simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
-        class=" p-2 rounded-md border sm:rounded-xl text-white border-pink-800 bg-pink-700 hover:bg-pink-800 hover:border-pink-900"
+        <a href="{{ url('/simple/diet-analysis') . '?date=' . urlencode($date) }}" 
+        class="p-2 rounded-md border sm:rounded-xl text-white border-pink-800 bg-pink-700 hover:bg-pink-800 hover:border-pink-900"
         style="background-color: #9d174d; border-color: #831843;">
         @if($currentDisplayLang === 'Sin')
-            ශ්‍රී ලංකා ජාතික රෝහලේ {{ urlencode(request('date')) ?? 'දිනයක් තෝරා නැත' }} දිනයේ සම්පූර්ණ ආහාර විශ්ලේෂණයට යන්න
+            ශ්‍රී ලංකා ජාතික රෝහලේ {{ $date ?? 'දිනයක් තෝරා නැත' }} දිනයේ සම්පූර්ණ ආහාර විශ්ලේෂණයට යන්න
         @elseif($currentDisplayLang === 'Tam')
-            {{ urlencode(request('date')) ?? 'தேதி தேர்ந்தெடுக்கப்படவில்லை' }} அன்று இலங்கை தேசிய மருத்துவமனையின் மொத்த உணவு பகுப்பாய்வுக்கு செல்லவும்
+            {{ $date ?? 'தேதி தேர்ந்தெடுக்கப்படவில்லை' }} அன்று இலங்கை தேசிய மருத்துவமனையின் மொத்த உணவு பகுப்பாய்வுக்கு செல்லவும்
         @else
-            Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
+            Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ $date ?? 'No Date Selected' }}
         @endif
         </a>
     @endif
@@ -187,6 +296,53 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Auto Populate Modal logic
+            const autoPopulateBtn = document.getElementById('autoPopulateBtn');
+            const autoPopulateModal = document.getElementById('autoPopulateModal');
+            const autoPopulateDate = document.getElementById('autoPopulateDate');
+            const autoPopulateCancel = document.getElementById('autoPopulateCancel');
+            const autoPopulateConfirm = document.getElementById('autoPopulateConfirm');
+            if (autoPopulateBtn && autoPopulateModal && autoPopulateDate && autoPopulateCancel && autoPopulateConfirm) {
+                autoPopulateBtn.addEventListener('click', function() {
+                    // Default to yesterday
+                    let today = new Date(@json($date ?? date('Y-m-d')));
+                    let yesterday = new Date(today);
+                    yesterday.setDate(today.getDate() - 1);
+                    autoPopulateDate.value = yesterday.toISOString().slice(0, 10);
+                    autoPopulateModal.classList.remove('hidden');
+                });
+                autoPopulateCancel.addEventListener('click', function() {
+                    autoPopulateModal.classList.add('hidden');
+                });
+                autoPopulateConfirm.addEventListener('click', function() {
+                    autoPopulateModal.classList.add('hidden');
+                    // Call Livewire with selected date
+                    if (window.Livewire) {
+                        window.Livewire.find(@json($this->getId())).call('autoPopulateFromYesterday', autoPopulateDate.value);
+                    }
+                });
+            }
+
+            // Clear All Modal logic
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const clearAllModal = document.getElementById('clearAllModal');
+            const clearAllCancel = document.getElementById('clearAllCancel');
+            const clearAllConfirm = document.getElementById('clearAllConfirm');
+            if (clearAllBtn && clearAllModal && clearAllCancel && clearAllConfirm) {
+                clearAllBtn.addEventListener('click', function() {
+                    clearAllModal.classList.remove('hidden');
+                });
+                clearAllCancel.addEventListener('click', function() {
+                    clearAllModal.classList.add('hidden');
+                });
+                clearAllConfirm.addEventListener('click', function() {
+                    clearAllModal.classList.add('hidden');
+                    // Call Livewire to clear all data
+                    if (window.Livewire) {
+                        window.Livewire.find(@json($this->getId())).call('clearAll');
+                    }
+                });
+            }
             let tabMovement = @json($tabMovement === 'LR'); // Convert LR/TB to boolean
             let moveCount = 0;
             let hasUnsavedChanges = false;

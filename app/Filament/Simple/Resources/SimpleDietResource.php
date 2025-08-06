@@ -146,6 +146,7 @@ class SimpleDietResource extends Resource
                     ->columnSpanFull()
                     ->helperText('Select one or more categories that best describe this diet type'),
                 Forms\Components\Toggle::make('active')->label('Active')->default(true)->columnSpanFull(),
+                Forms\Components\Toggle::make('auto_populate')->label('Auto Populate')->default(false)->columnSpanFull(),
                 Forms\Components\Section::make('Primary Amount')
                     ->columns(5)
                     ->schema([
@@ -332,7 +333,16 @@ class SimpleDietResource extends Resource
                         return !($user && userHasPermission($user, 'edit.SimpleDiet_Simple-Panel'));
                     })
                     ->toggleable(),
-                
+
+                Tables\Columns\IconColumn::make('auto_populate')
+                    ->label('Auto Populate')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('primary_amount_value')
                     ->label('Primary Amount Value')
                     ->sortable()

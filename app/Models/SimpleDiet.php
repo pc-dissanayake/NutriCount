@@ -25,13 +25,17 @@ class SimpleDiet extends Model
         'primary_amount_unit',
         'list_order',
         'multiply_values',
+        'auto_populate',
         'category',
         'description',
     ];
-protected function casts(): array
+
+    protected function casts(): array
     {
         return [
             'active' => 'boolean',
+            'multiply_values' => 'boolean',
+            'auto_populate' => 'boolean',
             'category' => 'array',
             'description' => 'array',
         ];

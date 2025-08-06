@@ -28,17 +28,20 @@ class HospitalUnitsDietsAmountSheet extends Page
 
     public function mount(): void
     {
-                $user = Auth::user();
+        $user = Auth::user();
 
-                if (!userHasPermission($user, 'view.unit-simple_panel') && !userHasPermission($user, 'list_all.unit-simple_panel')) {
-                    abort(403, 'Access denied. You do not have permission to view the sheet.');
-                }
+        if (!userHasPermission($user, 'view.unit-simple_panel') && !userHasPermission($user, 'list_all.unit-simple_panel')) {
+            abort(403, 'Access denied. You do not have permission to view the sheet.');
+        }
 
+        // Set date from request only if not already set (so Livewire keeps it in sync after actions)
+        if (!$this->date) {
+            $this->date = request()->query('date');
+        }
 
         // $this->units = HospitalUnit::where('active', true)->orderBy('order_id')->get();
 
-
-                // Check if user has permission to list all units
+        // Check if user has permission to list all units
         if (userHasPermission($user, 'list_all.unit-simple_panel')) {
             // Load all units
             $this->units = HospitalUnit::where('active', true)->orderBy('order_id')->get();
@@ -56,21 +59,17 @@ class HospitalUnitsDietsAmountSheet extends Page
             }
         }
 
-
-
-
         $this->diets = SimpleDiet::where('active', true)->orderBy('list_order')->get();
-        $this->date = request()->query('date');
-        
+
         // Clean the date to remove any query parameters that might be appended
         if ($this->date && strpos($this->date, '?') !== false) {
             $this->date = substr($this->date, 0, strpos($this->date, '?'));
         }
-        
+
         // Get tab movement from URL parameter (LR = Left to Right, TB = Top to Bottom)
         // Use user's default if no URL parameter is provided
         $this->tabMovement = request()->query('tabmove', $user->default_movement ?? 'LR');
-        
+
         // Set default language from user preference if available
         $this->defaultLanguage = $user->default_lang;
 
@@ -80,6 +79,41 @@ class HospitalUnitsDietsAmountSheet extends Page
                 $this->amounts[$unit->id][$diet->id] = $existing?->amount ?? '';
             }
         }
+    }
+
+    public function autoPopulateFromYesterday($selectedDate = null)
+    {
+        if (empty($this->date)) {
+            Notification::make()
+                ->title('Date is required to auto populate.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        $baseDate = $selectedDate ?? date('Y-m-d', strtotime($this->date . ' -1 day'));
+
+        foreach ($this->units as $unit) {
+            foreach ($this->diets as $diet) {
+                if (!($diet->auto_populate ?? false)) {
+                    continue;
+                }
+                $prev = HospitalUnitDietAmount::where('date', $baseDate)
+                    ->where('hospital_unit_id', $unit->id)
+                    ->where('simple_diet_id', $diet->id)
+                    ->whereNull('patient_id')
+                    ->first();
+                if ($prev) {
+                    $this->amounts[$unit->id][$diet->id] = $prev->amount;
+                }
+            }
+        }
+
+        Notification::make()
+            ->title('Auto populated from selected day!')
+            ->success()
+            ->send();
+        $this->dispatch('saved');
     }
 
     public function save()
@@ -150,6 +184,34 @@ class HospitalUnitsDietsAmountSheet extends Page
             ->success()
             ->duration(1500)
             ->send();
+    }
+
+    public function clearAll()
+    {
+        if (empty($this->date)) {
+            Notification::make()
+                ->title('Date is required to clear records.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        // Delete all records for this date
+        HospitalUnitDietAmount::query()->where('date', $this->date)->delete();
+
+        // Clear the amounts array
+        foreach ($this->units as $unit) {
+            foreach ($this->diets as $diet) {
+                $this->amounts[$unit->id][$diet->id] = '';
+            }
+        }
+
+        Notification::make()
+            ->title('All records cleared successfully!')
+            ->success()
+            ->send();
+        
+        $this->dispatch('saved');
     }
 
 }
