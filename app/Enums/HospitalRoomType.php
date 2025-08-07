@@ -99,4 +99,8 @@ enum HospitalRoomType: string
     {
         return $this->value;
     }
+    public static function options(): array
+    {
+        return array_column(self::cases(), 'value', 'value');
+    }
 }

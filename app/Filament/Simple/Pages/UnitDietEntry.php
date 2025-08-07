@@ -43,7 +43,7 @@ class UnitDietEntry extends Page
 
         $unitId = request('unit_id');
 
-        if (empty($this->date) || !$unitId || !$this->units->pluck('id')->contains($unitId)) {
+        if (empty($this->date) || !$unitId || !collect($this->units)->pluck('id')->contains($unitId)) {
             $this->date = null;
             $unitId = null;
         } else {

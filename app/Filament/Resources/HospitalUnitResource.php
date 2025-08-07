@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\HospitalRoomType;
 use App\Enums\MedicalSpecialty;
 use App\Filament\Resources\HospitalUnitResource\Pages;
 use App\Filament\Resources\HospitalUnitResource\RelationManagers;
 use App\Models\HospitalUnit;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -36,7 +39,7 @@ class HospitalUnitResource extends Resource
                                 Forms\Components\Toggle::make('active')->label('Active')->default(true),
                                 Forms\Components\Select::make('type')
                                     ->label('Type')
-                                    ->options(MedicalSpecialty::options())->searchable()
+                                    ->options(HospitalRoomType::options())->searchable()
                                     ->nullable(), Forms\Components\Select::make('specialty')
                                     ->label('Specialty')
                                     ->options(MedicalSpecialty::options())->searchable()
@@ -78,6 +81,82 @@ class HospitalUnitResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Tabs::make()
+                    ->tabs([
+                        Infolists\Components\Tabs\Tab::make('General')
+                            ->schema([
+                                Infolists\Components\Grid::make(2)
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('name')
+                                            ->label('Name'),
+                                        Infolists\Components\IconEntry::make('active')
+                                            ->label('Active')
+                                            ->boolean(),
+                                        Infolists\Components\TextEntry::make('type')
+                                            ->label('Type'),
+                                        Infolists\Components\TextEntry::make('specialty')
+                                            ->label('Specialty'),
+                                        Infolists\Components\TextEntry::make('alias')
+                                            ->label('Alias')
+                                            ->placeholder('No alias set'),
+                                        Infolists\Components\TextEntry::make('order_id')
+                                            ->label('Order ID'),
+                                    ]),
+                                Infolists\Components\TextEntry::make('tags')
+                                    ->label('Tags')
+                                    ->badge()
+                                    ->separator(',')
+                                    ->placeholder('No tags set'),
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('Other')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('description')
+                                    ->label('Description')
+                                    ->placeholder('No description set'),
+                                Infolists\Components\TextEntry::make('contactUser.name')
+                                    ->label('Contact User')
+                                    ->placeholder('No contact user set'),
+                                Infolists\Components\Grid::make(2)
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('part_of')
+                                            ->label('Part Of (UUID)')
+                                            ->placeholder('Not specified'),
+                                        Infolists\Components\TextEntry::make('endpoint')
+                                            ->label('Endpoint')
+                                            ->placeholder('Not specified'),
+                                    ]),
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('Qualification')
+                            ->schema([
+                                Infolists\Components\Grid::make(2)
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('qualification_code')
+                                            ->label('Qualification Code')
+                                            ->placeholder('Not specified'),
+                                        Infolists\Components\TextEntry::make('qualification_identifier')
+                                            ->label('Qualification Identifier')
+                                            ->placeholder('Not specified'),
+                                        Infolists\Components\TextEntry::make('qualification_period_start')
+                                            ->label('Period Start')
+                                            ->date()
+                                            ->placeholder('Not specified'),
+                                        Infolists\Components\TextEntry::make('qualification_period_end')
+                                            ->label('Period End')
+                                            ->date()
+                                            ->placeholder('Not specified'),
+                                    ]),
+                                Infolists\Components\TextEntry::make('qualification_issuer')
+                                    ->label('Qualification Issuer')
+                                    ->placeholder('Not specified'),
+                            ]),
+                    ]),
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -92,12 +171,17 @@ class HospitalUnitResource extends Resource
                     ->disabled(fn () => !userHasPermission(Auth::user(), 'edit.HospitalUnit')),
             
             ])
-            ->defaultSort('order_id')
+             ->defaultSort(function (Builder $query): Builder {
+                return $query
+                    ->orderBy('order_id')
+                    ->orderBy('name');
+            })
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+               Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

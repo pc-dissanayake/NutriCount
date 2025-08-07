@@ -52,8 +52,8 @@ class DietAnalysis extends Page
             throw new NotAcceptableHttpException('Date, month, or year parameter is required.');
         }
 
-        // Load all units
-        $this->units = HospitalUnit::all();
+        // Load all units ordered by order_id then name
+        $this->units = HospitalUnit::orderBy('order_id')->orderBy('name')->get();
 
         // Load all diet types ordered by list_order
         $this->dietTypes = SimpleDiet::orderBy('list_order')->get();

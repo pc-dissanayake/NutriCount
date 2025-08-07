@@ -9,6 +9,7 @@ use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class HospitalUnitsDietsAmountSheet extends Page
 {
@@ -44,7 +45,7 @@ class HospitalUnitsDietsAmountSheet extends Page
         // Check if user has permission to list all units
         if (userHasPermission($user, 'list_all.unit-simple_panel')) {
             // Load all units
-            $this->units = HospitalUnit::where('active', true)->orderBy('order_id')->get();
+            $this->units = HospitalUnit::where('active', true)->orderBy('order_id')->orderBy('name')->get();
         } else {
             // Load only units assigned to the user
             $assignedUnitIds = $user->units_assigned ?? [];
@@ -54,6 +55,7 @@ class HospitalUnitsDietsAmountSheet extends Page
                 $this->units = HospitalUnit::query()
                     ->whereIn('id', $assignedUnitIds)
                     ->orderBy('order_id')
+                    ->orderBy('name')
                     ->where('active',true)
                     ->get();
             }
@@ -83,6 +85,16 @@ class HospitalUnitsDietsAmountSheet extends Page
 
     public function autoPopulateFromYesterday($selectedDate = null)
     {
+        $user = Auth::user();
+        
+        if (!userHasPermission($user, 'populate.unit_diet_amounts-simple_panel')) {
+            Notification::make()
+                ->title('Access denied. You do not have permission to auto-populate.')
+                ->danger()
+                ->send();
+            return;
+        }
+
         if (empty($this->date)) {
             Notification::make()
                 ->title('Date is required to auto populate.')
@@ -92,6 +104,8 @@ class HospitalUnitsDietsAmountSheet extends Page
         }
 
         $baseDate = $selectedDate ?? date('Y-m-d', strtotime($this->date . ' -1 day'));
+        $populatedCount = 0;
+        $populatedDetails = [];
 
         foreach ($this->units as $unit) {
             foreach ($this->diets as $diet) {
@@ -105,8 +119,33 @@ class HospitalUnitsDietsAmountSheet extends Page
                     ->first();
                 if ($prev) {
                     $this->amounts[$unit->id][$diet->id] = $prev->amount;
+                    $populatedCount++;
+                    $populatedDetails[] = [
+                        'unit' => $unit->name,
+                        'diet' => $diet->DietName_en,
+                        'amount' => $prev->amount
+                    ];
                 }
             }
+        }
+
+        // Log the auto-populate action using Spatie Activity Log
+        if ($populatedCount > 0) {
+            \Spatie\Activitylog\Models\Activity::create([
+                'log_name' => 'diet_amounts_auto_populate',
+                'description' => "Auto-populated diet amounts from {$baseDate} to {$this->date} - {$populatedCount} records populated",
+                'subject_type' => 'App\Models\HospitalUnitDietAmount',
+                'subject_id' => Str::uuid()->toString(),
+                'event' => 'updated',
+                'causer_id' => Auth::id(),
+                'causer_type' => Auth::user()::class,
+                'properties' => [
+                    'target_date' => $this->date,
+                    'source_date' => $baseDate,
+                    'populated_count' => $populatedCount,
+                    'details' => $populatedDetails
+                ],
+            ]);
         }
 
         Notification::make()
@@ -126,20 +165,59 @@ class HospitalUnitsDietsAmountSheet extends Page
             return;
         }
 
+        $changedRecords = 0;
+        $logDetails = [];
         foreach ($this->amounts as $unitId => $diets) {
             foreach ($diets as $dietId => $amount) {
                 // Skip empty strings and null values
                 if (!is_null($amount) && $amount !== '') {
-                    HospitalUnitDietAmount::updateOrCreate(
-                        ['hospital_unit_id' => $unitId, 'simple_diet_id' => $dietId, 'date' => $this->date],
-                        ['amount' => $amount]
-                    );
+                    // Check if this is a new record or update
+                    $existing = HospitalUnitDietAmount::where('date', $this->date)
+                        ->where('hospital_unit_id', $unitId)
+                        ->where('simple_diet_id', $dietId)
+                        ->first();
+                    
+                    if (!$existing || $existing->amount != $amount) {
+                        $record = HospitalUnitDietAmount::updateOrCreate(
+                            ['hospital_unit_id' => $unitId, 'simple_diet_id' => $dietId, 'date' => $this->date],
+                            ['amount' => $amount]
+                        );
+                        
+                        $unit = $this->units->firstWhere('id', $unitId);
+                        $diet = $this->diets->firstWhere('id', $dietId);
+                        $logDetails[] = [
+                            'unit' => $unit?->name ?? 'Unknown',
+                            'diet' => $diet?->DietName_en ?? 'Unknown',
+                            'old_amount' => $existing?->amount ?? 0,
+                            'new_amount' => $amount,
+                            'action' => $existing ? 'updated' : 'created'
+                        ];
+                        $changedRecords++;
+                    }
                 }
             }
         }
 
+        // Log the changes using Spatie Activity Log
+        if (!empty($logDetails)) {
+            \Spatie\Activitylog\Models\Activity::create([
+                'log_name' => 'diet_amounts_save',
+                'description' => "Saved diet amounts for {$this->date} - {$changedRecords} records changed",
+                'subject_type' => 'App\Models\HospitalUnitDietAmount',
+                'subject_id' => Str::uuid()->toString(),
+                'event' => 'updated',
+                'causer_id' => Auth::id(),
+                'causer_type' => Auth::user()::class,
+                'properties' => [
+                    'date' => $this->date,
+                    'changed_records' => $changedRecords,
+                    'details' => $logDetails
+                ],
+            ]);
+        }
+
         Notification::make()
-            ->title('Amounts saved successfully!')
+            ->title("Amounts saved successfully! ($changedRecords records changed)")
             ->success()
             ->send();
             
@@ -188,6 +266,16 @@ class HospitalUnitsDietsAmountSheet extends Page
 
     public function clearAll()
     {
+        $user = Auth::user();
+        
+        if (!userHasPermission($user, 'clear_all.unit_diet_amounts-simple_panel')) {
+            Notification::make()
+                ->title('Access denied. You do not have permission to clear all records.')
+                ->danger()
+                ->send();
+            return;
+        }
+
         if (empty($this->date)) {
             Notification::make()
                 ->title('Date is required to clear records.')
@@ -196,6 +284,9 @@ class HospitalUnitsDietsAmountSheet extends Page
             return;
         }
 
+        // Count records before deletion for logging
+        $deletedCount = HospitalUnitDietAmount::where('date', $this->date)->count();
+        
         // Delete all records for this date
         HospitalUnitDietAmount::query()->where('date', $this->date)->delete();
 
@@ -205,6 +296,21 @@ class HospitalUnitsDietsAmountSheet extends Page
                 $this->amounts[$unit->id][$diet->id] = '';
             }
         }
+
+        // Log the clear action using Spatie Activity Log
+        \Spatie\Activitylog\Models\Activity::create([
+            'log_name' => 'diet_amounts_clear',
+            'description' => "Cleared all diet amounts for {$this->date} - {$deletedCount} records deleted",
+            'subject_type' => 'App\Models\HospitalUnitDietAmount',
+            'subject_id' => Str::uuid()->toString(),
+            'event' => 'updated',
+            'causer_id' => Auth::id(),
+            'causer_type' => Auth::user()::class,
+            'properties' => [
+                'date' => $this->date,
+                'deleted_records' => $deletedCount
+            ],
+        ]);
 
         Notification::make()
             ->title('All records cleared successfully!')

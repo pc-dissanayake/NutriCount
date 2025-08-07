@@ -51,4 +51,8 @@ enum MedicalSpecialty: string
     {
         return array_column(self::cases(), 'value', 'value');
     }
+      public function label(): string
+    {
+        return $this->value;
+    }
 }

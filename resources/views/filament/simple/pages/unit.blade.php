@@ -33,7 +33,7 @@
     <section class="bg-gray-200 dark:bg-gray-800 p-6 sm:p-10 md:p-8 rounded-xl">
         <div class="container mx-auto">
             <div class="grid grid-cols-4 gap-4">
-                @foreach (collect($unitData)->sortBy('name') as $unit)
+                @foreach (collect($unitData)->sortBy([['order_id', 'asc'], ['name', 'asc']]) as $unit)
                     @php
                         $params = [
                             'date' => request('date'),
@@ -72,13 +72,13 @@
     </a>
 @endif
 
-@if(Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel'))
+{{-- @if(Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel'))
                 <a href="{{ url('/simple/unit-diet-analysis') . '?start_date=' . \Carbon\Carbon::parse(request('date'))->startOfMonth()->toDateString() . '&end_date=' . \Carbon\Carbon::parse(request('date'))->endOfMonth()->toDateString() }}" 
                     class="h-full rounded-md border p-3 sm:rounded-xl sm:p-4 text-white border-pink-700 bg-pink-600 hover:bg-pink-700 hover:border-pink-800"
                     style="background-color: #be185d; border-color: #831843;">
                     Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ urlencode(request('date')) ?? 'No Date Selected' }}
                 </a>
-@endif
+@endif --}}
 
 
 

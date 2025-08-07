@@ -9,4 +9,11 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewHospitalUnit extends ViewRecord
 {
     protected static string $resource = HospitalUnitResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\EditAction::make(),
+        ];
+    }
 }

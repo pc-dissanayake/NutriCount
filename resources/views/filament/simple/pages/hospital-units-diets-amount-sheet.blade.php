@@ -51,6 +51,7 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
 
     <div class="mb-4 flex items-center justify-between gap-3">
         <div>
+            @if(Auth::user() && userHasPermission(Auth::user(), 'populate.unit_diet_amounts-simple_panel'))
         <button id="autoPopulateBtn" class="x-4 p-2 text-sm font-medium text-white bg-blue-400 rounded hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2" type="button" style="background-color: #ad1457; color: #ffffff; border-color: #ad1457;">
             @if($currentDisplayLang === 'Sin')
                 ස්වයං පුරවන්න 
@@ -60,6 +61,7 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                 Auto Populate
             @endif
         </button>
+@endif
         </div>
 
         <!-- Modal -->
@@ -265,6 +267,7 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                 @endif
             </x-filament::button>
 
+            @if(Auth::user() && userHasPermission(Auth::user(), 'clear_all.unit_diet_amounts-simple_panel'))
             <x-filament::button color="danger" id="clearAllBtn" type="button">
                 @if($currentDisplayLang === 'Sin')
                     සියල්ල මකන්න
@@ -274,7 +277,7 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                     Clear All
                 @endif
             </x-filament::button>
-
+@endif
 
         
     @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel'))
@@ -582,13 +585,8 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                         if (currentRow < rows.length - 1) {
                             nextIndex = currentIndex + cols;
                         } else {
-                            // Wrap to first row of next column
-                            if (currentCol < cols - 1) {
-                                nextIndex = currentCol + 1;
-                            } else {
-                                // If at last column, wrap to first column first row
-                                nextIndex = 0;
-                            }
+                            // Wrap to first row of same column
+                            nextIndex = currentCol;
                         }
                     } else if (e.key === 'ArrowUp') {
                         e.preventDefault();
@@ -596,13 +594,8 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
                         if (currentRow > 0) {
                             nextIndex = currentIndex - cols;
                         } else {
-                            // Wrap to last row of previous column
-                            if (currentCol > 0) {
-                                nextIndex = ((rows.length - 1) * cols) + (currentCol - 1);
-                            } else {
-                                // If at first column, wrap to last column last row
-                                nextIndex = (rows.length * cols) - 1;
-                            }
+                            // Wrap to last row of same column
+                            nextIndex = ((rows.length - 1) * cols) + currentCol;
                         }
                     } else if (e.key === 'Enter') {
                         e.preventDefault();

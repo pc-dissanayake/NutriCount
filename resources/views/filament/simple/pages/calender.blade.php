@@ -76,7 +76,13 @@
                     @if ($isFutureDate)
                         <span class="text-gray-500">{{ $day->day }}</span>
                     @else
-                        <a href="{{ url('/simple/unit?date=' . $dateStr) }}" class="hover:underline" style="color:inherit;">{{ $day->day }}</a>
+                        <a href="{{ url('/simple/unit?date=' . $dateStr) }}"
+                           class="block rounded-lg shadow transition-all duration-200 hover:shadow-lg hover:ring-2 hover:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                           style="color:inherit; background: rgba(255,255,255,0.7);">
+                            <div class="flex items-center justify-center h-10">
+                                <span class="font-semibold">{{ $day->day }}</span>
+                            </div>
+                        </a>
                     @endif
                 </div>
             @endforeach

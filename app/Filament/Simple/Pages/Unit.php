@@ -35,7 +35,12 @@ class Unit extends Page
         // Check if user has permission to list all units
         if (userHasPermission($user, 'list_all.unit-simple_panel')) {
             // Load all units
-            $units = HospitalUnit::query()->orderBy('order_id')->where('active',true)->pluck('name', 'id')->toArray();
+            $units = HospitalUnit::query()
+                ->where('active', true)
+                ->orderBy('order_id')
+                ->orderBy('name')
+                ->get()
+                ->toArray();
         } else {
             // Load only units assigned to the user
             $assignedUnitIds = $user->units_assigned ?? [];
@@ -44,21 +49,23 @@ class Unit extends Page
             } else {
                 $units = HospitalUnit::query()
                     ->whereIn('id', $assignedUnitIds)
+                    ->where('active', true)
                     ->orderBy('order_id')
-                    ->where('active',true)
-                    ->pluck('name', 'id')
+                    ->orderBy('name')
+                    ->get()
                     ->toArray();
             }
         }
         
         $this->unitData = [];
-        foreach ($units as $id => $name) {
-            $dataAvailable = \App\Models\HospitalUnitDietAmount::where('hospital_unit_id', $id)
+        foreach ($units as $unit) {
+            $dataAvailable = \App\Models\HospitalUnitDietAmount::where('hospital_unit_id', $unit['id'])
                 ->where('date', $date)
                 ->exists();
             $this->unitData[] = [
-                'id' => $id,
-                'name' => $name,
+                'id' => $unit['id'],
+                'name' => $unit['name'],
+                'order_id' => $unit['order_id'],
                 'dataavailable' => $dataAvailable,
             ];
         }
