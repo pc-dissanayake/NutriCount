@@ -125,15 +125,16 @@
             .diet-table th,
             .diet-table td {
                 border: 1px solid #333;
-                padding: 3mm;
+                padding: 3.6mm; /* Increased by 20% from 3mm */
                 text-align: left;
+                height: 120%; /* Make cells 20% taller */
             }
             
             .diet-table th {
                 background-color: #f5f5f5;
                 font-weight: bold;
                 text-align: center;
-                padding: 5mm 2mm;
+                padding: 6mm 2.4mm; /* Increased by 20% from 5mm 2mm */
                 vertical-align: middle;
                 word-break: break-word;
             }
@@ -281,7 +282,7 @@
                 <div class="section-title">Diet Distribution by Hospital Units</div>
                 
                 <div style="overflow-x: auto;">
-                    <table class="diet-table" style="font-size: 10pt; width: 100%;">
+                    <table class="diet-table" style="font-size: 14pt; width: 100%;">
                         <thead>
                             <tr>
                                 <th style="width: 150px; font-weight: bold; background-color: #e9ecef;">Hospital Unit</th>
@@ -300,15 +301,15 @@
                             <tr>
                                 <td style="font-weight: bold; background-color: #f8f9fa;">
                                     {{ $unitData['unit']->name ?? 'Unknown Unit' }}
-                                    @if(isset($unitData['unit']->alias) && $unitData['unit']->alias)
+                                    {{-- @if(isset($unitData['unit']->alias) && $unitData['unit']->alias)
                                     <br><span style="font-size: 8pt; color: #666;">({{ $unitData['unit']->alias }})</span>
-                                    @endif
+                                    @endif --}}
                                 </td>
                                 @foreach($data['diets'] as $diet)
                                 @php
                                     $amount = isset($unitData['diets'][$diet->id]) ? ($unitData['diets'][$diet->id]['amount'] ?? 0) : 0;
                                 @endphp
-                                <td style="text-align: center; {{ $amount > 0 ? 'background-color: #fff3cd;' : '' }}">
+                                <td style="text-align: center; line-height: 1.8; {{ $amount > 0 ? 'background-color: #fff3cd;' : '' }}">
                                     {{ $amount > 0 ? number_format($amount, 1) : '-' }}
                                 </td>
                                 @endforeach
