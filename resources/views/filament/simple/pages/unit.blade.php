@@ -72,6 +72,14 @@
     </a>
 @endif
 
+@if(Auth::user() && userHasPermission(Auth::user(), 'show-hospital-all-diets'))
+    <a href="{{ url('simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
+        class="h-full rounded-md border p-3 sm:rounded-xl sm:p-4 text-white border-pink-800 bg-pink-700 hover:bg-pink-800 hover:border-pink-900"
+        style="background-color: #9d174d; border-color: #831843;">
+        Go to Total Diet Analysis for Kitchen Staff on {{ urlencode(request('date')) ?? 'No Date Selected' }}
+    </a>
+@endif
+
 {{-- @if(Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel'))
                 <a href="{{ url('/simple/unit-diet-analysis') . '?start_date=' . \Carbon\Carbon::parse(request('date'))->startOfMonth()->toDateString() . '&end_date=' . \Carbon\Carbon::parse(request('date'))->endOfMonth()->toDateString() }}" 
                     class="h-full rounded-md border p-3 sm:rounded-xl sm:p-4 text-white border-pink-700 bg-pink-600 hover:bg-pink-700 hover:border-pink-800"
