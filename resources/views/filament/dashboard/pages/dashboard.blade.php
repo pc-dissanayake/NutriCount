@@ -1,17 +1,11 @@
 <x-filament::page>
-
 <style>
 
     a.disabled {
   pointer-events: none;
   cursor: default;
 }
-
-
 </style>
-
-
-
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <a href="{{ url('/simple') }}" class="block">
             <x-filament::card class="hover:bg-gray-100 transition">

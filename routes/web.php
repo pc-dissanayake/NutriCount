@@ -7,6 +7,9 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ActivityLogTestController;
 use App\Http\Controllers\DietAmountController;
+use App\Http\Controllers\PrintPage;
+use App\Livewire\DietAnalysisPagePrintableOnly;
+use App\Livewire\PageExport;
 
     Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -32,6 +35,11 @@ use App\Http\Controllers\DietAmountController;
             Route::get('/demo-filters', [ActivityLogTestController::class, 'demonstrateFiltering'])->name('activity-logs.demo-filters');
         });
     });
+
+    Route::get('export/diet-analysis-printable', DietAnalysisPagePrintableOnly::class);
+
+    Route::get('export/v2/diet-analysis', PrintPage::class);
+
 
     Route::post('/simple/unit-diet-entry/save', [UnitDietEntryController::class, 'saveDietAmounts'])->name('unit-diet-entry.save');
 

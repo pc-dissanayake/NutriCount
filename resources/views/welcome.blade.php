@@ -40,9 +40,6 @@
                         <a href="dashboard" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Simple Diet Management
                         </a>
-                        {{-- <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Patients @svg('bxl-dev-to')
-                        </a> --}}
                         <a href="/simple" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Main Dashboard
                         </a>
@@ -77,7 +74,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
                     <span class="block">National Hospital Sri Lanka</span>
-                    <span class="block text-green-400">Nutrition Management System</span>
+                    <span class="block text-green-400">Diet/Nutrition Management System</span>
                 </h1>
                 <p class="mt-3 max-w-md mx-auto text-base text-gray-300 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
                     Streamline patient nutrition planning, diet allocation, and monitoring for improved healthcare outcomes.
@@ -102,7 +99,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center">
                     <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                        Comprehensive Nutrition Management
+                        Comprehensive Diet/Nutrition Management
                     </h2>
                     <p class="mt-4 text-lg text-gray-500">
                         Efficiently manage dietary needs across all hospital units
@@ -137,7 +134,7 @@
                         Trusted by healthcare professionals
                     </h2>
                     <p class="mt-3 text-xl text-gray-500 sm:mt-4">
-                        Supporting nutritional management across the National Hospital Sri Lanka
+                        Supporting diet/nutritional management across the National Hospital Sri Lanka
                     </p>
                 </div>
             </div>
@@ -155,10 +152,7 @@
                                     <p class="order-1 text-sm font-medium text-gray-500">Hospital Units</p>
                                     <p class="order-2 mt-2 text-3xl font-extrabold text-green-600">{{ $stats['hospitalUnits'] }}+</p>
                                 </div>
-                                {{-- <div class="flex flex-col border-t border-gray-100 p-6 text-center sm:border-0 sm:border-l">
-                                    <p class="order-1 text-sm font-medium text-gray-500">Nutritional Plans</p>
-                                    <p class="order-2 mt-2 text-3xl font-extrabold text-green-600">{{ $stats['nutritionalPlans'] }}+</p>
-                                </div> --}}
+                               
                             </div>
                         </div>
                     </div>
