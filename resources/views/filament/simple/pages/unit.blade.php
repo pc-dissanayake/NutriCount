@@ -73,7 +73,7 @@
 @endif
 
 @if(Auth::user() && userHasPermission(Auth::user(), 'show-hospital-all-diets'))
-    <a href="{{ url('simple/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
+    <a href="{{ url('export/v2/diet-analysis') . '?date=' . urlencode(request('date')) }}" 
         class="h-full rounded-md border p-3 sm:rounded-xl sm:p-4 text-white border-pink-800 bg-pink-700 hover:bg-pink-800 hover:border-pink-900"
         style="background-color: #9d174d; border-color: #831843;">
         Go to Total Diet Analysis for Kitchen Staff on {{ urlencode(request('date')) ?? 'No Date Selected' }}
