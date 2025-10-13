@@ -33,6 +33,7 @@
     <section class="bg-gray-200 dark:bg-gray-800 p-6 sm:p-10 md:p-8 rounded-xl">
         <div class="container mx-auto">
             <div class="grid grid-cols-4 gap-4">
+                 @if(Auth::user() && userHasPermission(Auth::user(), 'list_all.unit-simple_panel'))
                 @foreach (collect($unitData)->sortBy([['order_id', 'asc'], ['name', 'asc']]) as $unit)
                     @php
                         $params = [
@@ -54,12 +55,14 @@
                         </span>
                     </a>
                 @endforeach
+                @endif
             </div>
         </div>
     </section>
 
                    @if(Auth::user() && userHasPermission(Auth::user(), 'view.daily_diet_analysis_calender_simple-panel')
-                   || Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel'))
+                   || Auth::user() && userHasPermission(Auth::user(), 'view.unit_diet_analysis_simple-panel')
+                   || Auth::user() && userHasPermission(Auth::user(), 'show-hospital-all-diets'))
   <div class="bg-gray-200 dark:bg-gray-900 p-6 sm:p-10 md:p-16 mt-20 rounded-xl">
         <div class="container mx-auto">
             <div class="flex flex-col gap-4 mb-4">
