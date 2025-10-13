@@ -23,8 +23,8 @@
                 font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
                 background: white !important;
                 color: black !important;
-                font-size: 16pt;
-                line-height: 1.8;
+                font-size: 20pt;
+                line-height: 2.0;
             }
             
             .a3-page {
