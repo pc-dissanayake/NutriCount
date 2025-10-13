@@ -293,6 +293,20 @@ $currentDisplayLang = request('Language') ?? $defaultLanguage ?? 'Eng';
         @endif
         </a>
     @endif
+
+    @if(Auth::user() && userHasPermission(Auth::user(), 'show-hospital-all-diets'))
+        <a href="{{ url('export/v2/diet-analysis') . '?date=' . urlencode($date) }}" 
+        class="p-2 rounded-md border sm:rounded-xl text-white border-pink-800 bg-pink-700 hover:bg-pink-800 hover:border-pink-900"
+        style="background-color: #9d174d; border-color: #831843;">
+        @if($currentDisplayLang === 'Sin')
+            ශ්‍රී ලංකා ජාතික රෝහලේ {{ $date ?? 'දිනයක් තෝරා නැත' }} දිනයේ සම්පූර්ණ ආහාර විශ්ලේෂණයට යන්න
+        @elseif($currentDisplayLang === 'Tam')
+            {{ $date ?? 'தேதி தேர்ந்தெடுக்கப்படவில்லை' }} அன்று இலங்கை தேசிய மருத்துவமனையின் மொத்த உணவு பகுப்பாய்வுக்கு செல்லவும்
+        @else
+            Go to Total Diet Analysis of National Hospital of Sri Lanka on {{ $date ?? 'No Date Selected' }}
+        @endif
+        </a>
+    @endif
         </div>
 
     </form>
